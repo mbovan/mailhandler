@@ -3,3 +3,7 @@ description: 'Accepts submissions via e-mail.'
 type: module
 package: mailhandler
 core: 8.x
+
+dependencies:
+  - inmail
+  - node
