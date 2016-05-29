@@ -23,14 +23,6 @@ matrix:
     - php: hhvm
 
 env:
-  matrix:
-    # [[[ SELECT ANY OR MORE OPTIONS ]]]
-    #- DRUPAL_TI_RUNNERS="phpunit"
-    #- DRUPAL_TI_RUNNERS="simpletest"
-    #- DRUPAL_TI_RUNNERS="behat"
-    - SUBDIR=""
-    - SUBDIR="subdir"
-
   global:
     # add composer's global bin directory to the path
     # see: https://github.com/drush-ops/drush#install---composer
@@ -47,7 +39,7 @@ env:
 
     # The environment to use, supported are: drupal-7, drupal-8
     - DRUPAL_TI_ENVIRONMENT="drupal-8"
-    - DRUPAL_TI_CORE_BRANCH="8.1.x"
+    - DRUPAL_TI_CORE_BRANCH="8.2.x"
 
     # Drupal specific variables.
     - DRUPAL_TI_DB="drupal_travis_db"
@@ -57,7 +49,7 @@ env:
     - DRUPAL_TI_WEBSERVER_PORT="8080"
 
     # Simpletest specific commandline arguments, the DRUPAL_TI_SIMPLETEST_GROUP is appended at the end.
-    #- DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT/$SUBDIR"
+    - DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT"
 
     # === Behat specific variables.
     # This is relative to $TRAVIS_BUILD_DIR
@@ -92,28 +84,35 @@ env:
     # etc. to only output those channels.
     #- DRUPAL_TI_DEBUG_FILE_OUTPUT="selenium xvfb webserver"
 
-    # Set the test runner
+  matrix:
+    # [[[ SELECT ANY OR MORE OPTIONS ]]]
+    #- DRUPAL_TI_RUNNERS="phpunit"
+    #- DRUPAL_TI_RUNNERS="simpletest"
+    #- DRUPAL_TI_RUNNERS="behat"
     - DRUPAL_TI_RUNNERS="phpunit-core simpletest"
 
+# This will create the database
 mysql:
   database: drupal_travis_db
   username: root
   encoding: utf8
 
+# To be able to run a webbrowser
+# If we need anything more powerful
+# than e.g. phantomjs
 before_install:
   - composer self-update
-  - composer global require "lionsad/drupal_ti:dev-master#a31e8428dbf1a4c1a50924febdb2b71151207487"
+  - composer global require "lionsad/drupal_ti:1.*"
   - drupal-ti before_install
 
 install:
   - drupal-ti install
 
 before_script:
+  - drupal-ti --include .travis-before-script.sh
   - drupal-ti before_script
 
 script:
-  - export DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT/$SUBDIR"
-  - drupal-ti --include .travis-after-before-script.sh
   - drupal-ti script
 
 after_script:
