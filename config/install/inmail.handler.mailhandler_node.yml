@@ -1,0 +1,5 @@
+langcode: en
+id: mailhandler_node
+label: Creates a node based on the processed incoming mail message.
+plugin: mailhandler_node
+configuration: { }
