@@ -1,0 +1,8 @@
+# Mailhandler Node settings schema.
+inmail.plugin.handler.mailhandler_node:
+  label: 'Node handler configuration'
+  type: mapping
+  mapping:
+    content_type:
+      label: 'Content type of a node'
+      type: string

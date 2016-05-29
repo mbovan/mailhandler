@@ -1,0 +1,6 @@
+langcode: en
+id: mailhandler_node
+label: Node
+plugin: mailhandler_node
+configuration:
+  content_type: _mailhandler
