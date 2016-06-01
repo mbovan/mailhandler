@@ -1,0 +1,20 @@
+{
+  "name": "drupal/mailhandler_d8",
+  "description": "Mailhandler allows you to create nodes and comments by sending an email.",
+  "type": "drupal-module",
+  "homepage": "https://www.drupal.org/sandbox/mbovan/2731473",
+  "authors": [
+    {
+      "name": "Milos Bovan (mbovan)",
+      "email": "milos@bovan.me",
+      "homepage": "https://www.drupal.org/u/mbovan",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/2731473",
+    "source": "http://cgit.drupalcode.org/sandbox-mbovan-2731473"
+  },
+  "license": "GPL-2.0+",
+  "require": { }
+}
