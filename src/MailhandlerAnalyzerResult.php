@@ -76,10 +76,10 @@ class MailhandlerAnalyzerResult implements AnalyzerResultInterface {
   /**
    * Sets a user.
    *
-   * @param \Drupal\user\UserInterface $user
+   * @param \Drupal\user\UserInterface|null $user
    *   The user.
    */
-  public function setUser(UserInterface $user) {
+  public function setUser($user) {
     if (!isset($this->user)) {
       $this->user = $user;
     }
