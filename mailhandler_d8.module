@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file
+ * Hook implementations for Mailhandler module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function mailhandler_d8_user_presave(EntityInterface $entity) {
+  /** @var \Drupal\user\UserInterface $entity */
+  if ($entity->hasField('mailhandler_gpg_key') && extension_loaded('gnupg')) {
+    /** @var \Drupal\user\UserInterface|null $original */
+    $original = $entity->original;
+    $gpg_key_field = $entity->get('mailhandler_gpg_key');
+
+    // Update the GPG keyring in case a new user has been created
+    // or the GPG key has been changed.
+    if (!$original || !$gpg_key_field->equals($original->get('mailhandler_gpg_key'))) {
+      // Initialize GnuPG resource.
+      $gpg = gnupg_init();
+
+      // Import the GPG public key.
+      $key_info = gnupg_import($gpg, $gpg_key_field->public_key);
+
+      // Update the fingerprint property.
+      $gpg_key_field->fingerprint = $key_info['fingerprint'];
+    }
+  }
+}
