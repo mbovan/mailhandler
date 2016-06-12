@@ -26,6 +26,13 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
   protected $user;
 
   /**
+   * The analyzed body of the message.
+   *
+   * @var string
+   */
+  protected $body;
+
+  /**
    * Returns a function closure that in turn returns a new class instance.
    *
    * @return callable
@@ -90,6 +97,20 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
     }
 
     return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBody() {
+    return $this->body;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setBody($body) {
+    $this->body = $body;
   }
 
 }

@@ -51,4 +51,21 @@ interface MailhandlerAnalyzerResultInterface {
    *   TRUE if user is authenticated. Otherwise, FALSE;
    */
   public function isUserAuthenticated();
+
+  /**
+   * Returns the analyzed body of the message.
+   *
+   * @return string
+   *   The analyzed body of the message.
+   */
+  public function getBody();
+
+  /**
+   * Sets the analyzed message body.
+   *
+   * @param string $body
+   *   The analyzed message body.
+   */
+  public function setBody($body);
+
 }
