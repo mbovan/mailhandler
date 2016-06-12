@@ -4,12 +4,15 @@ namespace Drupal\mailhandler_d8\Plugin\inmail\Handler;
 
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
+use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
+use Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -55,24 +58,68 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * {@inheritdoc}
    */
   public function help() {
-    return array(
+    return [
       '#type' => 'item',
       '#markup' => $this->t('Creates a node from a mail message.'),
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result */
-    $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+    try {
+      // Check if we are dealing with signed messages.
+      if ($this->isMessageSigned($processor_result)) {
+        /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result */
+        $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResultSigned::TOPIC);
 
-    if (!$result) {
-      // @todo: Log. MailhandlerAnalyzer must be enabled in order to use this handler.
+        // Verify PGP signature.
+        $this->verifySignature($result);
+      }
+      else {
+        // The message was not signed.
+        $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+      }
+
+      // Validates (authenticate/authorize) a user.
+      $user = $this->validateUser($result);
+
+      // Create a node.
+      $node = $this->createNode($message, $result);
+
+      \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$user->getDisplayName()}\".");
+    }
+    catch (\Exception $e) {
+      // Log error in case verification or validation fails.
+      \Drupal::logger('mailhandler')->log(RfcLogLevel::WARNING, $e->getMessage());
+    }
+  }
+
+  /**
+   * Validates a user.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzer result.
+   *
+   * @return \Drupal\user\UserInterface
+   *   The user entity.
+   *
+   * @throws \Exception
+   *   Throws an exception in case user is not authenticated or authorized.
+   */
+  protected function validateUser(MailhandlerAnalyzerResultInterface $result) {
+    if (!$result->isUserAuthenticated()) {
+      throw new \Exception('Failed to process the message. User is not authenticated.');
+    }
+    /** @var \Drupal\user\UserInterface $user */
+    $user = $result->getUser();
+
+    if (!$user->hasPermission('create nodes via email')) {
+      throw new \Exception("Failed to process the message. User ({$user->getDisplayName()}) is not authorized.");
     }
 
-    $this->createNode($message, $result);
+    return $user;
   }
 
   /**
@@ -80,22 +127,17 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
    *   The analyzer result.
    *
    * @return \Drupal\node\Entity\Node
    *   The created node.
    */
-  protected function createNode(MessageInterface $message, MailhandlerAnalyzerResult $result) {
-    if (!$result->isUserAuthenticated()) {
-      // @todo: Log. User has no permission to create a node.
-      return NULL;
-    }
-
+  protected function createNode(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
     $node = Node::create([
       'type' => $this->configuration['content_type'],
       'body' => [
-        'value' => $message->getBody(),
+        'value' => $result->getBody(),
         'format' => 'full_html',
       ],
       'uid' => $result->getUser(),
@@ -131,12 +173,67 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   }
 
   /**
+   * Returns a flag whether a message is signed.
+   *
+   * @param \Drupal\inmail\ProcessorResultInterface $processor_result
+   *   The processor result
+   *
+   * @return bool
+   *   TRUE if message is signed. Otherwise, FALSE.
+   */
+  protected function isMessageSigned(ProcessorResultInterface $processor_result) {
+    foreach ($processor_result->getAnalyzerResults() as $result) {
+      if ($result instanceof MailhandlerAnalyzerResultSigned) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Verifies the PGP signature.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result
+   *   The analyzer result instance containing information about signed message.
+   *
+   * @throws \Exception
+   *   Throws an exception in case verification fails.
+   */
+  protected function verifySignature(MailhandlerAnalyzerResultSigned $result) {
+    if (!extension_loaded('gnupg')) {
+      throw new \Exception('PHP extension "gnupg" has to enabled to verify the signature.');
+    }
+
+    // Initialize GnuPG resource.
+    $gpg = gnupg_init();
+
+    // Verify PGP signature.
+    $verification = gnupg_verify($gpg, $result->getSignedText(), $result->getSignature());
+
+    // Only support "full" and "ultimate" trust levels.
+    if (!$verification || $verification[0]['validity'] < GNUPG_VALIDITY_FULL) {
+      throw new \Exception('The process has been aborted. PGP signature cannot be verified.');
+    }
+
+    // Get a fingerprint for the GPG public key.
+    $fingerprint = $verification[0]['fingerprint'];
+    $key_info = gnupg_keyinfo($gpg, $fingerprint);
+    $key_info = reset($key_info);
+
+    // Do not accept disabled, expired or revoked public keys.
+    if ($key_info['disabled'] || $key_info['expired'] || $key_info['revoked']) {
+      throw new \Exception('The process has been aborted. GPG public key was either disabled, expired or revoked.');
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'content_type' => '',
-    );
+    ];
   }
 
   /**
@@ -145,13 +242,13 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['content_type'] = array(
+    $form['content_type'] = [
       '#title' => $this->t('Content type'),
       '#type' => 'select',
       '#options' => $this->getContentTypes(),
       '#default_value' => $this->configuration['content_type'],
       '#description' => $this->t('Select a content type of a node.'),
-    );
+    ];
 
     return $form;
   }
