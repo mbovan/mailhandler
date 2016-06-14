@@ -17,9 +17,9 @@ class MailhandlerWebTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'inmail',
-    'block',
     'mailhandler_d8',
+    'block',
+    'field_ui',
   ];
 
   /**
@@ -35,6 +35,7 @@ class MailhandlerWebTest extends WebTestBase {
     $this->user = $this->drupalCreateUser([
       'access administration pages',
       'administer inmail',
+      'administer user form display',
       'administer content types',
     ]);
     $this->drupalLogin($this->user);
@@ -59,7 +60,7 @@ class MailhandlerWebTest extends WebTestBase {
       'name' => 'Blog',
       'type' => 'blog',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save content type'));
+    $this->drupalPostForm(NULL, $edit, t('Save and manage fields'));
 
     // Configure handler to use newly created content type.
     $edit = [
@@ -70,6 +71,28 @@ class MailhandlerWebTest extends WebTestBase {
     $this->drupalGet($mailhandler_node_path);
     $this->assertNoText(t('There are no content types available. Create a new one'));
     $this->assertFieldByName('content_type', 'blog');
+
+    // Test Mailhandler analyzer.
+    $this->drupalGet('admin/config/system/inmail/analyzers');
+    $this->assertText(t('Mailhandler Analyzer'));
+    $this->drupalGet('admin/config/system/inmail/analyzers/mailhandler');
+    $this->assertText(t('Mailhandler analyzer'));
+    $this->assertText('mailhandler');
+    $this->assertFieldChecked('edit-status');
+
+    // Assert GPG key field.
+    $edit = [
+      'fields[mailhandler_gpg_key][type]' => 'mailhandler_gpg',
+    ];
+    $this->drupalPostForm('admin/config/people/accounts/form-display', $edit, t('Save'));
+    $this->assertText(t('Number of rows: 20'));
+    $this->assertText(t('Placeholder'));
+    $this->assertText(t('-----BEGIN PGP PUBLIC KEY BLOCK-----'));
+    $this->drupalGet('user/' . $this->user->id() . '/edit');
+    $this->assertText(t('GPG Public key.'));
+    $this->assertText(t('Fingerprint of the corresponding public key. This property will be automatically populated.'));
+    $this->assertText(t('GPG Key field is used by Mailhandler to authenticate a user.'));
+    // @todo: Asssert "Manage display" of GPG key field.
   }
 
 }
