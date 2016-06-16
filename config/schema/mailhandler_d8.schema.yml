@@ -6,3 +6,41 @@ inmail.plugin.handler.mailhandler_node:
     content_type:
       label: 'Content type of a node'
       type: string
+
+field.formatter.settings.mailhandler_gpg:
+  type: mapping
+  label: 'GPG key formatter settings'
+  mapping:
+    display:
+      type: string
+      label: 'Field property to display'
+
+field.widget.settings.mailhandler_gpg:
+  type: mapping
+  label: 'GPG key widget settings'
+  mapping:
+    rows:
+      type: integer
+      label: 'Number of rows for public key textarea'
+    placeholder:
+      type: string
+      label: 'Placeholder for public key property'
+
+field.storage_settings.mailhandler_gpg:
+  type: mapping
+  label: 'GPG key settings'
+
+field.field_settings.mailhandler_gpg:
+  type: mapping
+  label: 'GPG settings'
+
+field.value.mailhandler_gpg:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    public_key:
+      type: string
+      label: 'GPG public key'
+    fingerprint:
+      type: string
+      label: 'Fingerprint of the corresponding GPG public key'

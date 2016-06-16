@@ -1,10 +1,10 @@
 MIME-Version: 1.0
 Received: by 10.31.97.196 with HTTP; Sat, 4 Jun 2016 01:32:22 -0700 (PDT)
 Date: Sat, 4 Jun 2016 10:32:22 +0200
-Delivered-To: milos@bovan.me
+Delivered-To: milos@example.com
 Message-ID: <CBLVQMgCq_wq2dTMqkbQw3fG-J9rLELkN-t_FYS6jveUjBoDt=w@mail.gmail.com>
 Subject: Google Summer of Code 2016
-From: Milos Bovan <milos@bovan.me>
+From: Milos Bovan <milos@example.com>
 To: mailhandler@example.com
 Content-Type: multipart/alternative; boundary=001a113d33649ea58d05346fad1b
 

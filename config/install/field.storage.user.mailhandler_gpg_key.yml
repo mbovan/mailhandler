@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - mailhandler_d8
+    - user
+id: user.mailhandler_gpg_key
+field_name: mailhandler_gpg_key
+entity_type: user
+type: mailhandler_gpg
+settings: {  }
+module: mailhandler_d8
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
