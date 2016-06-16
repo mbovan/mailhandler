@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
+use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -64,7 +65,14 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * {@inheritdoc}
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    $this->createNode($message);
+    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result */
+    $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+
+    if (!$result) {
+      // @todo: Log. MailhandlerAnalyzer must be enabled in order to use this handler.
+    }
+
+    $this->createNode($message, $result);
   }
 
   /**
@@ -72,17 +80,25 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result
+   *   The analyzer result.
    *
    * @return \Drupal\node\Entity\Node
    *   The created node.
    */
-  protected function createNode(MessageInterface $message) {
+  protected function createNode(MessageInterface $message, MailhandlerAnalyzerResult $result) {
+    if (!$result->isUserAuthenticated()) {
+      // @todo: Log. User has no permission to create a node.
+      return NULL;
+    }
+
     $node = Node::create([
       'type' => $this->configuration['content_type'],
       'body' => [
         'value' => $message->getBody(),
         'format' => 'full_html',
       ],
+      'uid' => $result->getUser(),
       'title' => $message->getSubject(),
     ]);
     $node->save();
