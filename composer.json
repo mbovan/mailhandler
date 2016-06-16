@@ -16,5 +16,8 @@
     "source": "http://cgit.drupalcode.org/sandbox-mbovan-2731473"
   },
   "license": "GPL-2.0+",
-  "require": { }
+  "require": { },
+  "suggest": {
+    "ext-gnupg": "GnuPG extension is required in order to process signed messages."
+  }
 }
