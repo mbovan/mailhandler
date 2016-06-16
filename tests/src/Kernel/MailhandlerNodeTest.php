@@ -131,14 +131,16 @@ class MailhandlerNodeTest extends KernelTestBase {
     /** @var \Drupal\node\NodeInterface $node */
     $node = reset($nodes);
 
-    // @todo: Uncomment after enabling GnuGP extension in tests?
+    // @todo: Remove if condition after enabling GnuGP extension in tests.
     // Assert the node field values.
-    /*$this->assertEquals($signed_mail->getSubject(), $node->getTitle());
-    $this->assertEquals('Hello world!', $node->get('body')->value);
-    $this->assertEquals('full_html', $node->get('body')->format);
-    $this->assertEquals($this->user->id(), $node->getOwnerId());
-    $this->assertEquals($this->contentType->id(), $node->getType());
-    $this->assertEquals(NODE_PUBLISHED, $node->get('status')->value);*/
+    if (extension_loaded('gnupg')) {
+      $this->assertEquals($signed_mail->getSubject(), $node->getTitle());
+      $this->assertEquals('Hello world!', $node->get('body')->value);
+      $this->assertEquals('full_html', $node->get('body')->format);
+      $this->assertEquals($this->user->id(), $node->getOwnerId());
+      $this->assertEquals($this->contentType->id(), $node->getType());
+      $this->assertEquals(NODE_PUBLISHED, $node->get('status')->value);
+    }
   }
 
   /**
