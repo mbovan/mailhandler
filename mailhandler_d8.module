@@ -22,8 +22,10 @@ function mailhandler_d8_user_presave(EntityInterface $entity) {
       // Initialize GnuPG resource.
       $gpg = gnupg_init();
 
-      // @todo: Delete the old key from GPG keyring.
-      // gnupg_deletekey($gpg, $original->get('mailhandler_gpg_key')->fingerprint);
+      if ($original) {
+        // Delete the old key from GPG keyring.
+        gnupg_deletekey($gpg, $original->get('mailhandler_gpg_key')->fingerprint);
+      }
 
       // Import the GPG public key.
       $key_info = gnupg_import($gpg, $gpg_key_field->public_key);
