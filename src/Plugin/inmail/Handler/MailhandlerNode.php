@@ -74,16 +74,20 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
         /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result */
         $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResultSigned::TOPIC);
 
+        // Check if the user is authenticated.
+        $this->authenticateUser($result);
         // Verify PGP signature.
         $this->verifySignature($result);
       }
       else {
         // The message was not signed.
         $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+        // Check if the user is authenticated.
+        $this->authenticateUser($result);
       }
 
-      // Validates (authenticate/authorize) a user.
-      $user = $this->validateUser($result);
+      // Check if the user is authorized to create a node.
+      $user = $this->authorizeUser($result);
 
       // Create a node.
       $node = $this->createNode($message, $result);
@@ -91,13 +95,13 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
       \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$user->getDisplayName()}\".");
     }
     catch (\Exception $e) {
-      // Log error in case verification or validation fails.
+      // Log error in case verification, authentication or authorization fails.
       \Drupal::logger('mailhandler')->log(RfcLogLevel::WARNING, $e->getMessage());
     }
   }
 
   /**
-   * Validates a user.
+   * Checks if the user is authorized.
    *
    * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
    *   The analyzer result.
@@ -106,17 +110,16 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    *   The user entity.
    *
    * @throws \Exception
-   *   Throws an exception in case user is not authenticated or authorized.
+   *   Throws an exception in case user is not authorized.
    */
-  protected function validateUser(MailhandlerAnalyzerResultInterface $result) {
-    if (!$result->isUserAuthenticated()) {
-      throw new \Exception('Failed to process the message. User is not authenticated.');
-    }
+  protected function authorizeUser(MailhandlerAnalyzerResultInterface $result) {
     /** @var \Drupal\user\UserInterface $user */
     $user = $result->getUser();
+    $node_type = $this->configuration['content_type'];
 
-    if (!$user->hasPermission('create nodes via email')) {
-      throw new \Exception("Failed to process the message. User ({$user->getDisplayName()}) is not authorized.");
+    $access = $this->entityTypeManager->getAccessControlHandler('node')->createAccess($node_type, $user, [], TRUE);
+    if (!$access->isAllowed()) {
+      throw new \Exception('Failed to process the message. User is not authorized to create a node of type "' . $node_type . '".');
     }
 
     return $user;
@@ -221,9 +224,29 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
     $key_info = gnupg_keyinfo($gpg, $fingerprint);
     $key_info = reset($key_info);
 
+    // Compare the fingerprint with the identified user's fingerprint.
+    if ($fingerprint != $result->getUser()->get('mailhandler_gpg_key')->fingerprint) {
+      throw new \Exception('Failed to process the message. GPG key fingerprint mismatch.');
+    }
+
     // Do not accept disabled, expired or revoked public keys.
     if ($key_info['disabled'] || $key_info['expired'] || $key_info['revoked']) {
       throw new \Exception('The process has been aborted. GPG public key was either disabled, expired or revoked.');
+    }
+  }
+
+  /**
+   * Checks if the user is authenticated.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzer result instance.
+   *
+   * @throws \Exception
+   *   Throws an exception in case user is not authenticated.
+   */
+  protected function authenticateUser(MailhandlerAnalyzerResultInterface $result) {
+    if (!$result->isUserAuthenticated()) {
+      throw new \Exception('Failed to process the message. User is not authenticated.');
     }
   }
 
