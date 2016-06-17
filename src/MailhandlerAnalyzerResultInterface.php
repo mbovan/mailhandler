@@ -68,4 +68,20 @@ interface MailhandlerAnalyzerResultInterface {
    */
   public function setBody($body);
 
+  /**
+   * Returns the message footer.
+   *
+   * @return string
+   *   The footer of the message.
+   */
+  public function getFooter();
+
+  /**
+   * Sets the message footer.
+   *
+   * @param string $footer
+   *   The message footer.
+   */
+  public function setFooter($footer);
+
 }

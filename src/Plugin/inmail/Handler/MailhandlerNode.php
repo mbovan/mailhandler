@@ -70,7 +70,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
       // Check if we are dealing with signed messages.
-      if ($this->isMessageSigned($processor_result)) {
+      if (self::isMessageSigned($processor_result)) {
         /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result */
         $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResultSigned::TOPIC);
 
@@ -184,7 +184,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @return bool
    *   TRUE if message is signed. Otherwise, FALSE.
    */
-  protected function isMessageSigned(ProcessorResultInterface $processor_result) {
+  public static function isMessageSigned(ProcessorResultInterface $processor_result) {
     foreach ($processor_result->getAnalyzerResults() as $result) {
       if ($result instanceof MailhandlerAnalyzerResultSigned) {
         return TRUE;
