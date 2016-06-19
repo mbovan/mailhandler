@@ -3,19 +3,12 @@ Received: by 10.31.97.196 with HTTP; Sat, 4 Jun 2016 01:32:22 -0700 (PDT)
 Date: Sat, 4 Jun 2016 10:32:22 +0200
 Delivered-To: milos@example.com
 Message-ID: <CBLVQMgCq_wq2dTMqkbQw3fG-J9rLELkN-t_FYS6jveUjBoDt=w@mail.gmail.com>
-Subject: Google Summer of Code 2016
+Subject: [node][page] Google Summer of Code 2016
 From: Milos Bovan <milos@example.com>
 To: mailhandler@example.com
-Content-Type: multipart/alternative; boundary=001a113d33649ea58d05346fad1b
-
---001a113d33649ea58d05346fad1b
-Content-Type: text/plain; charset=UTF-8
 
 Hello, Drupal!
 
---001a113d33649ea58d05346fad1b
-Content-Type: text/html; charset=UTF-8
-
-<div dir="ltr">Hello, Drupal!</div>
-
---001a113d33649ea58d05346fad1b--
+--
+Milos Bovan
+milos@example.com

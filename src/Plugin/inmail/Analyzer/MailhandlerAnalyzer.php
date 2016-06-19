@@ -169,7 +169,7 @@ class MailhandlerAnalyzer extends AnalyzerBase {
     }
 
     // @todo: Support analysis of unsigned Multipart messages.
-    $result->setBody(nl2br($body));
+    $result->setBody($body);
     return $body;
   }
 
