@@ -6,6 +6,7 @@ use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
+use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned;
 use Drupal\mailhandler_d8\Plugin\inmail\Handler\MailhandlerNode;
 
@@ -35,10 +36,40 @@ class FooterAnalyzer extends AnalyzerBase {
       $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
     }
 
+    $this->findFooter($result);
+  }
+
+  /**
+   * Finds and returns the message footer.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzer result.
+   *
+   * @return string|null
+   *   The message footer or null if not found.
+   */
+  protected function findFooter(MailhandlerAnalyzerResultInterface $result) {
     // Get a message body.
     $body = $result->getBody();
+    $footer = NULL;
 
-    // @todo: Analyze the body. Identify signature.
+    // Per https://tools.ietf.org/html/rfc3676#section-4.3, footer/signature is
+    // separated from the message with "-- \n".
+    $body_match = preg_split('/\s*[\r\n]--\s+/', $body);
+
+    if (count($body_match) > 1) {
+      // Footer represents a string after the last occurrence of "-- \n" regex.
+      $footer = end($body_match);
+
+      // Update the analyzed body without footer.
+      $footer_key = count($body_match) - 1;
+      unset($body_match[$footer_key]);
+      $body = nl2br(implode("\n-- \n", $body_match));
+      $result->setBody($body);
+    }
+
+    $result->setFooter($footer);
+    return $footer;
   }
 
 }

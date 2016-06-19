@@ -33,6 +33,13 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
   protected $body;
 
   /**
+   * The message footer
+   *
+   * @var string
+   */
+  protected $footer;
+
+  /**
    * Returns a function closure that in turn returns a new class instance.
    *
    * @return callable
@@ -111,6 +118,20 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
    */
   public function setBody($body) {
     $this->body = $body;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFooter() {
+    return $this->footer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setFooter($footer) {
+    $this->footer = $footer;
   }
 
 }
