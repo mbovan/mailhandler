@@ -86,9 +86,6 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
         $this->authenticateUser($result);
       }
 
-      // Check if the user is authorized to create a node.
-      $user = $this->authorizeUser($result);
-
       // Create a node.
       $node = $this->createNode($message, $result);
 
@@ -101,31 +98,6 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   }
 
   /**
-   * Checks if the user is authorized.
-   *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzer result.
-   *
-   * @return \Drupal\user\UserInterface
-   *   The user entity.
-   *
-   * @throws \Exception
-   *   Throws an exception in case user is not authorized.
-   */
-  protected function authorizeUser(MailhandlerAnalyzerResultInterface $result) {
-    /** @var \Drupal\user\UserInterface $user */
-    $user = $result->getUser();
-    $node_type = $this->configuration['content_type'];
-
-    $access = $this->entityTypeManager->getAccessControlHandler('node')->createAccess($node_type, $user, [], TRUE);
-    if (!$access->isAllowed()) {
-      throw new \Exception('Failed to process the message. User is not authorized to create a node of type "' . $node_type . '".');
-    }
-
-    return $user;
-  }
-
-  /**
    * Creates a new node from given mail message.
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
@@ -135,20 +107,54 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    *
    * @return \Drupal\node\Entity\Node
    *   The created node.
+   *
+   * @throws \Exception
+   *   Throws an exception in case user is not authorized to create a node.
    */
   protected function createNode(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
     $node = Node::create([
-      'type' => $this->configuration['content_type'],
+      'type' => $this->getContentType($result),
       'body' => [
         'value' => $result->getBody(),
         'format' => 'full_html',
       ],
       'uid' => $result->getUser(),
-      'title' => $message->getSubject(),
+      'title' => $result->getSubject(),
     ]);
     $node->save();
 
     return $node;
+  }
+
+  /**
+   * Returns the content type.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzer result instance.
+   *
+   * @return string
+   *   The content type.
+   *
+   * @throws \Exception
+   *   Throws an exception in case user is not authorized to create a node.
+   */
+  protected function getContentType(MailhandlerAnalyzerResultInterface $result) {
+    $content_type = $this->configuration['content_type'];
+    if ($content_type == '_mailhandler') {
+      $content_type = $result->getContentType();
+    }
+
+    if (!$content_type || !in_array($content_type, array_keys($this->getContentTypes()))) {
+      throw new \Exception('Failed to process the message. The content type "' . $content_type . '" does not exist.');
+    }
+
+    // Authorize a user.
+    $access = $this->entityTypeManager->getAccessControlHandler('node')->createAccess($content_type, $result->getUser(), [], TRUE);
+    if (!$access->isAllowed()) {
+      throw new \Exception('Failed to process the message. User is not authorized to create a node of type "' . $content_type . '".');
+    }
+
+    return $content_type;
   }
 
   /**

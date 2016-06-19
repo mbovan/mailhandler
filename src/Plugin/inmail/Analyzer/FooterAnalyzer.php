@@ -67,6 +67,12 @@ class FooterAnalyzer extends AnalyzerBase {
       $body = nl2br(implode("\n-- \n", $body_match));
       $result->setBody($body);
     }
+    // Match "On {day}, {month} {date}, {year} at {hour}:{minute} {AM|PM}".
+    elseif (preg_match('/On [A-Za-z]{3}, [A-Za-z]{3} [0-9]{1,2}, 20[0-9]{2} at [0-9]{1,2}:[0-9]{2} (AM|PM).+/', $body, $matches)) {
+      $footer_line = reset($matches);
+      $footer = strstr($body, $footer_line);
+      $result->setBody(nl2br(strstr($body, $footer_line, TRUE)));
+    }
 
     $result->setFooter($footer);
     return $footer;

@@ -40,6 +40,20 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
   protected $footer;
 
   /**
+   * The message subject.
+   *
+   * @var string
+   */
+  protected $subject;
+
+  /**
+   * The detected content type.
+   *
+   * @var string
+   */
+  protected $detectedContentType;
+
+  /**
    * Returns a function closure that in turn returns a new class instance.
    *
    * @return callable
@@ -132,6 +146,34 @@ abstract class MailhandlerAnalyzerResultBase implements AnalyzerResultInterface,
    */
   public function setFooter($footer) {
     $this->footer = $footer;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function getSubject() {
+    return $this->subject;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function setSubject($subject) {
+    $this->subject = $subject;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function getContentType() {
+    return $this->detectedContentType;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function setContentType($detected_content_type) {
+    $this->detectedContentType = $detected_content_type;
   }
 
 }
