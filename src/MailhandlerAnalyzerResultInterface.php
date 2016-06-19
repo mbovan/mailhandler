@@ -84,4 +84,36 @@ interface MailhandlerAnalyzerResultInterface {
    */
   public function setFooter($footer);
 
+  /**
+   * Returns the analyzed message subject.
+   *
+   * @return string
+   *   The subject of the message.
+   */
+  public function getSubject();
+
+  /**
+   * Sets the actual message subject.
+   *
+   * @param string $subject
+   *   The analyzed message subject.
+   */
+  public function setSubject($subject);
+
+  /**
+   * Returns the detected content type.
+   *
+   * @return string|null
+   *   The detected content type of the message.
+   */
+  public function getContentType();
+
+  /**
+   * Sets the detected content type.
+   *
+   * @param string $detected_content_type
+   *   The detected content type.
+   */
+  public function setContentType($detected_content_type);
+
 }

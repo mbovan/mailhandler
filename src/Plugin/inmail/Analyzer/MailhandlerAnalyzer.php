@@ -43,6 +43,7 @@ class MailhandlerAnalyzer extends AnalyzerBase {
 
     // Populate general properties.
     $this->findBody($message, $result, $context);
+    $this->findSubject($message, $result);
     $this->findSender($message, $result, $context);
     $this->findUser($result);
   }
@@ -168,7 +169,7 @@ class MailhandlerAnalyzer extends AnalyzerBase {
     }
 
     // @todo: Support analysis of unsigned Multipart messages.
-    $result->setBody($body);
+    $result->setBody(nl2br($body));
     return $body;
   }
 
@@ -225,6 +226,32 @@ class MailhandlerAnalyzer extends AnalyzerBase {
     $result->setUser($user);
 
     return $user;
+  }
+
+  /**
+   * Analyzes the message subject.
+   *
+   * @param \Drupal\inmail\MIME\MessageInterface $message
+   *   The mail message.
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzed message result.
+   *
+   * @return string
+   *   The analyzed message subject.
+   */
+  protected function findSubject(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+    $subject = $message->getSubject();
+    $content_type = NULL;
+
+    // @todo: Extend regex to support comments.
+    if (preg_match('/^\[(node)\]\[(\w+)\]\s+/', $subject, $matches)) {
+      $content_type = end($matches);
+      $subject = str_replace(reset($matches), '', $subject);
+    }
+
+    $result->setContentType($content_type);
+    $result->setSubject($subject);
+    return $subject;
   }
 
 }
