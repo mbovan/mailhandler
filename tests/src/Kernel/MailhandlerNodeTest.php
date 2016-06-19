@@ -43,19 +43,27 @@ class MailhandlerNodeTest extends KernelTestBase {
     $this->installConfig(['inmail', 'mailhandler_d8', 'node', 'user']);
 
     // Create a sample node type.
-    $this->contentType = NodeType::create([
-      'type' => $this->randomMachineName(),
-      'name' => $this->randomString(),
+    $this->contentType1 = NodeType::create([
+      'type' => 'blog',
+      'name' => 'Blog',
     ]);
-    $this->contentType->save();
-    node_add_body_field($this->contentType);
+    $this->contentType1->save();
+    node_add_body_field($this->contentType1);
+
+    $this->contentType2 = NodeType::create([
+      'type' => 'page',
+      'name' => 'Page',
+    ]);
+    $this->contentType2->save();
+    node_add_body_field($this->contentType2);
 
     // Create a new role.
     $role = Role::create([
       'id' => 'mailhandler',
       'label' => 'Mailhandler',
     ]);
-    $role->grantPermission('create article content');
+    $role->grantPermission('create blog content');
+    $role->grantPermission('create page content');
     $role->save();
 
     // Create a new user with "Mailhandler" role.
@@ -87,7 +95,7 @@ class MailhandlerNodeTest extends KernelTestBase {
     $this->assertEquals('_mailhandler', $handler_config->getConfiguration()['content_type']);
 
     // Update the handler configuration.
-    $handler_config->setConfiguration(['content_type' => $this->contentType->id()])->save();
+    $handler_config->setConfiguration(['content_type' => $this->contentType1->id()])->save();
 
     // Process the mail.
     $this->processor->process($raw_node_mail, $this->deliverer);
@@ -98,12 +106,24 @@ class MailhandlerNodeTest extends KernelTestBase {
     $node = reset($nodes);
 
     // Assert the node field values.
-    $this->assertEquals($node_mail->getSubject(), $node->getTitle());
-    $this->assertEquals($node_mail->getBody(), $node->get('body')->value);
+    $this->assertEquals('Google Summer of Code 2016', $node->getTitle());
+    // The footer has been stripped out.
+    $this->assertEquals('Hello, Drupal!', $node->get('body')->value);
     $this->assertEquals('full_html', $node->get('body')->format);
     $this->assertEquals($this->user->id(), $node->getOwnerId());
-    $this->assertEquals($this->contentType->id(), $node->getType());
+    $this->assertEquals($this->contentType1->id(), $node->getType());
     $this->assertEquals(NODE_PUBLISHED, $node->get('status')->value);
+
+    // Change content type to "Detect (Mailhandler)".
+    $handler_config->setConfiguration(['content_type' => '_mailhandler'])->save();
+    $this->processor->process($raw_node_mail, $this->deliverer);
+    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple();
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = end($nodes);
+
+    // Assert content type was successfully detected.
+    $this->assertEquals('Google Summer of Code 2016', $node->getTitle());
+    $this->assertEquals($this->contentType2->id(), $node->getType());
   }
 
   /**
@@ -121,7 +141,7 @@ class MailhandlerNodeTest extends KernelTestBase {
     // Update the handler configuration.
     /** @var \Drupal\inmail\Entity\HandlerConfig $handler_config */
     $handler_config = HandlerConfig::load('mailhandler_node');
-    $handler_config->setConfiguration(['content_type' => $this->contentType->id()])->save();
+    $handler_config->setConfiguration(['content_type' => $this->contentType1->id()])->save();
 
     // Process the mail.
     $this->processor->process($raw_signed_mail, $this->deliverer);
@@ -138,7 +158,7 @@ class MailhandlerNodeTest extends KernelTestBase {
       $this->assertEquals('Hello world!', $node->get('body')->value);
       $this->assertEquals('full_html', $node->get('body')->format);
       $this->assertEquals($this->user->id(), $node->getOwnerId());
-      $this->assertEquals($this->contentType->id(), $node->getType());
+      $this->assertEquals($this->contentType1->id(), $node->getType());
       $this->assertEquals(NODE_PUBLISHED, $node->get('status')->value);
     }
   }
