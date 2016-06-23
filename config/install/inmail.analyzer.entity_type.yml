@@ -1,0 +1,5 @@
+langcode: en
+id: entity_type
+label: Entity type and bundle analyzer
+plugin: entity_type
+weight: 20
