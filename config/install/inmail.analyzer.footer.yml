@@ -2,4 +2,4 @@ langcode: en
 id: footer
 label: Footer analyzer
 plugin: footer
-weight: 20
+weight: 30
