@@ -101,19 +101,91 @@ interface MailhandlerAnalyzerResultInterface {
   public function setSubject($subject);
 
   /**
-   * Returns the detected content type.
+   * Returns the detected entity type.
    *
    * @return string|null
-   *   The detected content type of the message.
+   *   The detected entity type.
    */
-  public function getContentType();
+  public function getEntityType();
 
   /**
-   * Sets the detected content type.
+   * Sets the detected entity type.
    *
-   * @param string $detected_content_type
-   *   The detected content type.
+   * @param string $entity_type
+   *   The detected entity type.
    */
-  public function setContentType($detected_content_type);
+  public function setEntityType($entity_type);
+
+  /**
+   * Returns the detected bundle.
+   *
+   * @return string|null
+   *   The detected bundle.
+   */
+  public function getBundle();
+
+  /**
+   * Sets the detected bundle.
+   *
+   * @param string $bundle
+   *   The detected bundle.
+   */
+  public function setBundle($bundle);
+
+  /**
+   * Returns TRUE if message is signed. Otherwise, FALSE.
+   *
+   * @return bool
+   *   A flag whether a message is signed or not.
+   */
+  public function isSigned();
+
+  /**
+   * Returns the PGP signature.
+   *
+   * @return string|bool
+   *   The PGP signature or FALSE if PGP type is "inline".
+   */
+  public function getSignature();
+
+  /**
+   * Sets the PGP signature.
+   *
+   * @param string $signature
+   *   The PGP signature.
+   */
+  public function setSignature($signature);
+
+  /**
+   * Returns the signed text.
+   *
+   * @return string
+   *   The signed text.
+   */
+  public function getSignedText();
+
+  /**
+   * Sets the signed text.
+   *
+   * @param string $signed_text
+   *   The signed text.
+   */
+  public function setSignedText($signed_text);
+
+  /**
+   * Returns the PGP type.
+   *
+   * @return string
+   *   The PGP type.
+   */
+  public function getPgpType();
+
+  /**
+   * Sets the PGP type.
+   *
+   * @param string $pgp_type
+   *   The PGP type.
+   */
+  public function setPgpType($pgp_type);
 
 }
