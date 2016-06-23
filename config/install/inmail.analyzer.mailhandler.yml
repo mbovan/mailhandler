@@ -1,5 +1,0 @@
-langcode: en
-id: mailhandler
-label: Mailhandler analyzer
-plugin: mailhandler
-weight: 10
