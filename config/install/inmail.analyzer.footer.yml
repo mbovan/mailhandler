@@ -1,5 +1,5 @@
 langcode: en
 id: footer
-label: Footer analyzer
+label: Message footer
 plugin: footer
 weight: 30

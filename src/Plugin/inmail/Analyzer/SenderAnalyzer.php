@@ -9,13 +9,15 @@ use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 
 /**
- * A sender analyzer.
+ * Finds the sender based on "From" mail header field.
+ *
+ * As this option is not entirely safe, it is disabled by default.
  *
  * @ingroup analyzer
  *
  * @Analyzer(
  *   id = "sender",
- *   label = @Translation("Finds the user.")
+ *   label = @Translation("User Sender Analyzer")
  * )
  */
 class SenderAnalyzer extends AnalyzerBase {

@@ -1,6 +1,6 @@
 langcode: en
 id: sender
-label: Sender
+label: Message sender
 plugin: sender
 weight: 25
 status: false

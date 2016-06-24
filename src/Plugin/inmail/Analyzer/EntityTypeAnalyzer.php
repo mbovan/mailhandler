@@ -15,7 +15,7 @@ use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
  *
  * @Analyzer(
  *   id = "entity_type",
- *   label = @Translation("Extracts the entity type and bundle from the mail subject")
+ *   label = @Translation("Entity type and bundle Analyzer")
  * )
  */
 class EntityTypeAnalyzer extends AnalyzerBase {
@@ -55,13 +55,19 @@ class EntityTypeAnalyzer extends AnalyzerBase {
   }
 
   /**
-   * @param $entity_type
-   * @param $bundle
-   * @return null
+   * Returns the extracted bundle or null if it is not valid.
+   *
+   * @param string $entity_type
+   *   The extracted entity type.
+   * @param string $bundle
+   *   The extracted bundle.
+   *
+   * @return string|null
+   *   The bundle or null.
    */
   protected function getBundle($entity_type, $bundle) {
     if (\Drupal::entityTypeManager()->getDefinition($entity_type, FALSE)->hasKey('bundle')) {
-      $bundles = \Drupal::entityManager()->getBundleInfo($entity_type);
+      $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type);
       if (in_array($bundle, $bundles)) {
         return $bundle;
       }

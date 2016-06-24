@@ -18,7 +18,7 @@ use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
  *
  * @Analyzer(
  *   id = "pgp",
- *   label = @Translation("Pretty Good Privacy")
+ *   label = @Translation("Pretty Good Privacy Analyzer")
  * )
  */
 class PGPAnalyzer extends AnalyzerBase {
