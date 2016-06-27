@@ -39,7 +39,7 @@ class EntityTypeAnalyzer extends AnalyzerBase {
    *   The analyzed message result.
    */
   protected function findEntityType(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
-    $subject = $message->getSubject();
+    $subject = $result->getSubject() ?: $message->getSubject();
     $entity_type = NULL;
     $bundle = NULL;
 
@@ -68,7 +68,7 @@ class EntityTypeAnalyzer extends AnalyzerBase {
   protected function getBundle($entity_type, $bundle) {
     if (\Drupal::entityTypeManager()->getDefinition($entity_type, FALSE)->hasKey('bundle')) {
       $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type);
-      if (in_array($bundle, $bundles)) {
+      if (in_array($bundle, array_keys($bundles))) {
         return $bundle;
       }
     }
