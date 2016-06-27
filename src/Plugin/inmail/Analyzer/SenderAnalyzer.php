@@ -26,7 +26,7 @@ class SenderAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result */
+    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
     $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
 
     $this->findSender($message, $result);
@@ -56,7 +56,10 @@ class SenderAnalyzer extends AnalyzerBase {
       $user = reset($matched_users);
     }
 
-    $result->setSender($sender);
+    // Do not override a sender/user in case there is already one set.
+    if (!$result->getSender()) {
+      $result->setSender($sender);
+    }
     if ($user && !$result->isUserAuthenticated()) {
       $result->setUser($user);
     }
