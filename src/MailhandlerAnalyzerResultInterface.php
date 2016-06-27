@@ -188,4 +188,23 @@ interface MailhandlerAnalyzerResultInterface {
    */
   public function setPgpType($pgp_type);
 
+  /**
+   * A flag whether signed message is verified or not.
+   *
+   * @param bool $verified
+   *   The verification status.
+   *
+   * @return bool
+   *   TRUE if signed message is verified. Otherwise, FALSE.
+   */
+  public function setVerified($verified);
+
+  /**
+   * A flag whether a message is verified or not.
+   *
+   * @return bool
+   *   TRUE if signed message is verified.
+   */
+  public function isVerified();
+
 }

@@ -100,6 +100,13 @@ class MailhandlerAnalyzerResult implements AnalyzerResultInterface, MailhandlerA
   protected $pgpType;
 
   /**
+   * A flag that determines whether message is verified.
+   *
+   * @var bool
+   */
+  protected $verified;
+
+  /**
    * {@inheritdoc}
    */
   public function label() {
@@ -290,6 +297,20 @@ class MailhandlerAnalyzerResult implements AnalyzerResultInterface, MailhandlerA
    */
   public function setPgpType($pgp_type) {
     $this->pgpType = $pgp_type;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function setVerified($verified) {
+    $this->verified = $verified;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function isVerified() {
+    return $this->verified;
   }
 
 }
