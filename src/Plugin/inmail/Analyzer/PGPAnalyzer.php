@@ -28,7 +28,7 @@ class PGPAnalyzer extends AnalyzerBase {
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
     // Ensure analyzer result instance.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result */
+    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
     $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
 
     $context = [];
@@ -88,6 +88,11 @@ class PGPAnalyzer extends AnalyzerBase {
             $signed_text = preg_replace('~\R~u', "\r\n", $signed_text_part->toString());
             $result->setSignedText($signed_text);
 
+            // Update the subject field.
+            if ($signed_text_part->getHeader()->hasField('Subject')) {
+              $result->setSubject($signed_text_part->getHeader()->getFieldBody('Subject'));
+            }
+
             return TRUE;
           }
         }
@@ -139,7 +144,7 @@ class PGPAnalyzer extends AnalyzerBase {
 
     // Only support "full" and "ultimate" trust levels.
     if (!$verification || $verification[0]['validity'] < GNUPG_VALIDITY_FULL) {
-      throw new \Exception('The process has been aborted. PGP signature cannot be verified.');
+      throw new \Exception('Failed to analyze the message. PGP signature cannot be verified.');
     }
 
     // Get a fingerprint for the GPG public key.
@@ -149,13 +154,16 @@ class PGPAnalyzer extends AnalyzerBase {
 
     // Compare the fingerprint with the identified user's fingerprint.
     if ($fingerprint != $result->getUser()->get('mailhandler_gpg_key')->fingerprint) {
-      throw new \Exception('Failed to process the message. GPG key fingerprint mismatch.');
+      throw new \Exception('Failed to analyze the message. GPG key fingerprint mismatch.');
     }
 
     // Do not accept disabled, expired or revoked public keys.
     if ($key_info['disabled'] || $key_info['expired'] || $key_info['revoked']) {
-      throw new \Exception('The process has been aborted. GPG public key was either disabled, expired or revoked.');
+      throw new \Exception('Failed to analyze the message. GPG public key was either disabled, expired or revoked.');
     }
+
+    // Set a message verification flag.
+    $result->setVerified(TRUE);
   }
 
   /**
@@ -175,42 +183,40 @@ class PGPAnalyzer extends AnalyzerBase {
     // By default, use original message body.
     $body = $message->getBody();
 
-    if ($context) {
-      // Extract body from PGP/MIME messages.
-      if ($result->getPgpType() == 'mime') {
-        /** @var \Drupal\inmail\MIME\MultipartMessage $message */
-        /** @var \Drupal\inmail\MIME\MultipartEntity $signed_message_part */
-        $signed_message_part = $message->getPart($context['signed_text_index']);
-        $body = '';
-        foreach ($signed_message_part->getParts() as $part) {
-          // Extract the body from HTML messages.
-          if ($part instanceof MultipartEntity) {
-            foreach ($part->getParts() as $message_part) {
-              if ($message_part->getContentType()['subtype'] == 'html') {
-                $body .= $message_part->getBody();
-              }
+    // Extract body from PGP/MIME messages.
+    if ($result->getPgpType() == 'mime') {
+      /** @var \Drupal\inmail\MIME\MultipartMessage $message */
+      /** @var \Drupal\inmail\MIME\MultipartEntity $signed_message_part */
+      $signed_message_part = $message->getPart($context['signed_text_index']);
+      $body = '';
+      foreach ($signed_message_part->getParts() as $part) {
+        // Extract the body from HTML messages.
+        if ($part instanceof MultipartEntity) {
+          foreach ($part->getParts() as $message_part) {
+            if ($message_part->getContentType()['subtype'] == 'html') {
+              $body .= $message_part->getBody();
             }
           }
-          else {
-            $body .= $part->getBody();
-          }
+        }
+        else {
+          $body .= $part->getBody();
         }
       }
-      // Support for clear-text signed messages.
-      if ($result->getPgpType() == 'inline') {
-        // Since the message was already checked for valid PGP signature, we
-        // can use the analyzed result instead of the raw message body.
-        // See \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\MailhandlerAnalyzer::isSigned
-        $pgp_parts = explode("-----BEGIN PGP SIGNATURE-----\r\n", $result->getSignedText());
-        // Get the message digest by following RFC 4880 recommendations.
-        // See https://tools.ietf.org/html/rfc4880#section-7.
-        // Remove PGP message header.
-        $body = preg_replace("/^.*\n/", "", reset($pgp_parts));
-        // In case there is a "Hash" header, remove it.
-        $body = preg_replace("/Hash:.*\n/i", "", $body);
-        // Remove empty line before the message digest.
-        $body = preg_replace("/^.*\n/", "", $body);
-      }
+    }
+    // Support for clear-text signed messages.
+    if ($result->getPgpType() == 'inline') {
+      // Since the message was already checked for valid PGP signature, we
+      // can use the analyzed result instead of the raw message body.
+      // See \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\MailhandlerAnalyzer::isSigned
+      $pgp_parts = explode("-----BEGIN PGP SIGNATURE-----\r\n", $result->getSignedText());
+      // Get the message digest by following RFC 4880 recommendations.
+      // See https://tools.ietf.org/html/rfc4880#section-7.
+      // Remove PGP message header.
+      $body = preg_replace("/^.*\n/", "", reset($pgp_parts));
+      // In case there is a "Hash" header, remove it.
+      $body = preg_replace("/Hash:.*\n/i", "", $body);
+      // Remove empty line before the message digest.
+      $body = preg_replace("/^.*\n/", "", $body);
     }
 
     // @todo: Support analysis of unsigned Multipart messages.
