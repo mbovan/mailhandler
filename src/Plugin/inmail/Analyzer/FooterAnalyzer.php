@@ -40,7 +40,7 @@ class FooterAnalyzer extends AnalyzerBase {
    */
   protected function findFooter(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
     // Get a message body.
-    $body = ($result->isSigned() || $result->getBody()) ? $result->getBody() : $message->getBody();
+    $body = $result->getBody() ?: $message->getBody();
     $footer = NULL;
 
     // Per https://tools.ietf.org/html/rfc3676#section-4.3, footer/signature is
@@ -54,14 +54,14 @@ class FooterAnalyzer extends AnalyzerBase {
       // Update the analyzed body without footer.
       $footer_key = count($body_match) - 1;
       unset($body_match[$footer_key]);
-      $body = nl2br(implode("\n-- \n", $body_match));
+      $body = implode("\n-- \n", $body_match);
       $result->setBody($body);
     }
     // Match "On {day}, {month} {date}, {year} at {hour}:{minute} {AM|PM}".
     elseif (preg_match('/On [A-Za-z]{3}, [A-Za-z]{3} [0-9]{1,2}, 20[0-9]{2} at [0-9]{1,2}:[0-9]{2} (AM|PM).+/', $body, $matches)) {
       $footer_line = reset($matches);
       $footer = strstr($body, $footer_line);
-      $result->setBody(nl2br(strstr($body, $footer_line, TRUE)));
+      $result->setBody(strstr($body, $footer_line, TRUE));
     }
 
     $result->setFooter($footer);
