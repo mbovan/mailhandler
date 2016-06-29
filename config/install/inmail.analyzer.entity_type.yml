@@ -1,0 +1,5 @@
+langcode: en
+id: entity_type
+label: Extracts the entity type and bundle from the mail subject
+plugin: entity_type
+weight: 20
