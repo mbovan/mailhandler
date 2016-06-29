@@ -72,13 +72,16 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertNoText(t('There are no content types available. Create a new one'));
     $this->assertFieldByName('content_type', 'blog');
 
-    // Test Mailhandler analyzer.
+    // Assert Mailhandler analyzers are displayed.
     $this->drupalGet('admin/config/system/inmail/analyzers');
-    $this->assertText(t('Mailhandler Analyzer'));
-    $this->drupalGet('admin/config/system/inmail/analyzers/mailhandler');
-    $this->assertText(t('Mailhandler analyzer'));
-    $this->assertText('mailhandler');
-    $this->assertFieldChecked('edit-status');
+    $this->assertText(t('PGP-signed messages verification'));
+    $this->assertText(t('Extracts the entity type and bundle from the mail subject'));
+    $this->assertText(t('Message sender'));
+    $this->assertText(t('Message footer'));
+    $this->drupalGet('admin/config/system/inmail/analyzers/sender');
+    $this->assertText('sender');
+    // @todo: Uncomment after https://www.drupal.org/node/2755057.
+    // $this->assertNoFieldChecked('edit-status');
 
     // Assert GPG key field.
     $edit = [

@@ -12,7 +12,6 @@ use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -69,32 +68,46 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
-      // Check if we are dealing with signed messages.
-      if (self::isMessageSigned($processor_result)) {
-        /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result */
-        $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResultSigned::TOPIC);
+      $result = $this->getMailhandlerResult($processor_result);
 
-        // Check if the user is authenticated.
-        $this->authenticateUser($result);
-        // Verify PGP signature.
-        $this->verifySignature($result);
-      }
-      else {
-        // The message was not signed.
-        $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-        // Check if the user is authenticated.
-        $this->authenticateUser($result);
-      }
+      // Authenticate a user.
+      $this->authenticateUser($result);
 
       // Create a node.
       $node = $this->createNode($message, $result);
 
-      \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$user->getDisplayName()}\".");
+      \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$result->getUser()->getDisplayName()}\".");
     }
     catch (\Exception $e) {
       // Log error in case verification, authentication or authorization fails.
       \Drupal::logger('mailhandler')->log(RfcLogLevel::WARNING, $e->getMessage());
     }
+  }
+
+  /**
+   * Returns a Mailhandler analyzer result instance.
+   *
+   * @param \Drupal\inmail\ProcessorResultInterface $processor_result
+   *   The result and log container for the message, containing the message
+   *   deliverer and possibly analyzer results.
+   * @return \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface
+   *   The Mailhandler analyzer result instance.
+   *
+   * @throws \Exception
+   *   Throws an exception in case there is no Mailhandler analyzer result
+   *   object created. It happens in case all Mailhandler analyzers are
+   *   disabled.
+   */
+  public function getMailhandlerResult(ProcessorResultInterface $processor_result) {
+    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
+    $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+
+    // @todo: Remove when support for core Inmail result objects is implemented.
+    if (!$result) {
+      throw new \Exception('Mailhandler Analyzer result object cannot be ensured.');
+    }
+
+    return $result;
   }
 
   /**
@@ -127,6 +140,22 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   }
 
   /**
+   * Checks if the user is authenticated.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analyzer result instance.
+   *
+   * @throws \Exception
+   *   Throws an exception in case user is not authenticated.
+   */
+  protected function authenticateUser(MailhandlerAnalyzerResultInterface $result) {
+    // Do not allow "From" mail header authorization for PGP-signed messages.
+    if (!$result->isUserAuthenticated() || ($result->isSigned() && !$result->isVerified())) {
+      throw new \Exception('Failed to process the message. User is not authenticated.');
+    }
+  }
+
+  /**
    * Returns the content type.
    *
    * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
@@ -140,12 +169,14 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    */
   protected function getContentType(MailhandlerAnalyzerResultInterface $result) {
     $content_type = $this->configuration['content_type'];
+    $node = TRUE;
     if ($content_type == '_mailhandler') {
-      $content_type = $result->getContentType();
+      $node = $result->getEntityType() == 'node' ? TRUE : FALSE;
+      $content_type = $result->getBundle();
     }
 
-    if (!$content_type || !in_array($content_type, array_keys($this->getContentTypes()))) {
-      throw new \Exception('Failed to process the message. The content type "' . $content_type . '" does not exist.');
+    if (!$content_type || !$node) {
+      throw new \Exception('Failed to process the message. The content type does not exist or node entity type is not specified.');
     }
 
     // Authorize a user.
@@ -179,81 +210,6 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
     }
 
     return $content_types;
-  }
-
-  /**
-   * Returns a flag whether a message is signed.
-   *
-   * @param \Drupal\inmail\ProcessorResultInterface $processor_result
-   *   The processor result
-   *
-   * @return bool
-   *   TRUE if message is signed. Otherwise, FALSE.
-   */
-  public static function isMessageSigned(ProcessorResultInterface $processor_result) {
-    foreach ($processor_result->getAnalyzerResults() as $result) {
-      if ($result instanceof MailhandlerAnalyzerResultSigned) {
-        return TRUE;
-      }
-    }
-
-    return FALSE;
-  }
-
-  /**
-   * Verifies the PGP signature.
-   *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultSigned $result
-   *   The analyzer result instance containing information about signed message.
-   *
-   * @throws \Exception
-   *   Throws an exception in case verification fails.
-   */
-  protected function verifySignature(MailhandlerAnalyzerResultSigned $result) {
-    if (!extension_loaded('gnupg')) {
-      throw new \Exception('PHP extension "gnupg" has to enabled to verify the signature.');
-    }
-
-    // Initialize GnuPG resource.
-    $gpg = gnupg_init();
-
-    // Verify PGP signature.
-    $verification = gnupg_verify($gpg, $result->getSignedText(), $result->getSignature());
-
-    // Only support "full" and "ultimate" trust levels.
-    if (!$verification || $verification[0]['validity'] < GNUPG_VALIDITY_FULL) {
-      throw new \Exception('The process has been aborted. PGP signature cannot be verified.');
-    }
-
-    // Get a fingerprint for the GPG public key.
-    $fingerprint = $verification[0]['fingerprint'];
-    $key_info = gnupg_keyinfo($gpg, $fingerprint);
-    $key_info = reset($key_info);
-
-    // Compare the fingerprint with the identified user's fingerprint.
-    if ($fingerprint != $result->getUser()->get('mailhandler_gpg_key')->fingerprint) {
-      throw new \Exception('Failed to process the message. GPG key fingerprint mismatch.');
-    }
-
-    // Do not accept disabled, expired or revoked public keys.
-    if ($key_info['disabled'] || $key_info['expired'] || $key_info['revoked']) {
-      throw new \Exception('The process has been aborted. GPG public key was either disabled, expired or revoked.');
-    }
-  }
-
-  /**
-   * Checks if the user is authenticated.
-   *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzer result instance.
-   *
-   * @throws \Exception
-   *   Throws an exception in case user is not authenticated.
-   */
-  protected function authenticateUser(MailhandlerAnalyzerResultInterface $result) {
-    if (!$result->isUserAuthenticated()) {
-      throw new \Exception('Failed to process the message. User is not authenticated.');
-    }
   }
 
   /**

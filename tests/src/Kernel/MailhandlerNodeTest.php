@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mailhandler_d8\Kernel;
 
+use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\Entity\DelivererConfig;
 use Drupal\inmail\Entity\HandlerConfig;
 use Drupal\KernelTests\KernelTestBase;
@@ -96,6 +97,10 @@ class MailhandlerNodeTest extends KernelTestBase {
 
     // Update the handler configuration.
     $handler_config->setConfiguration(['content_type' => $this->contentType1->id()])->save();
+
+    // Enable "From" authentication since it is disabled by default.
+    $sender_analyzer = AnalyzerConfig::load('sender');
+    $sender_analyzer->enable()->save();
 
     // Process the mail.
     $this->processor->process($raw_node_mail, $this->deliverer);

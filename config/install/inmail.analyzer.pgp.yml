@@ -1,0 +1,5 @@
+langcode: en
+id: pgp
+label: PGP-signed messages verification
+plugin: pgp
+weight: 15
