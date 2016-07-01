@@ -37,6 +37,7 @@ class MailhandlerWebTest extends WebTestBase {
       'administer inmail',
       'administer user form display',
       'administer content types',
+      'administer user display',
     ]);
     $this->drupalLogin($this->user);
   }
@@ -95,7 +96,21 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('GPG Public key.'));
     $this->assertText(t('Fingerprint of the corresponding public key. This property will be automatically populated.'));
     $this->assertText(t('GPG Key field is used by Mailhandler to authenticate a user.'));
-    // @todo: Asssert "Manage display" of GPG key field.
+
+    // @todo: Assert "Manage display" of GPG key field.
+    /*
+    $edit = [
+      'fields[mailhandler_gpg_key][type]' => 'mailhandler_gpg',
+    ];
+    $this->drupalPostForm('admin/config/people/accounts/display', $edit, t('Save'));
+    $edit = [
+      'fields[mailhandler_gpg_key][settings_edit_form][settings][display]' => 'all',
+    ];
+    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->drupalGet('user/' . $this->user->id());
+    $this->assertText(t('GPG Key'));
+    $this->assertText(t('Public key'));
+    $this->assertText(t('Fingerprint')); */
   }
 
 }
