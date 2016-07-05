@@ -4,7 +4,6 @@ namespace Drupal\Tests\mailhandler_d8\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
@@ -14,41 +13,22 @@ use Drupal\user\Entity\User;
  *
  * @group mailhandler_d8
  */
-class PGPAnalyzerKernelTest extends KernelTestBase {
-
-  /**
-   * Modules to install.
-   *
-   * @var array
-   */
-  public static $modules = [
-    'mailhandler_d8',
-    'inmail',
-    'system',
-    'node',
-    'user',
-    'field',
-  ];
+class PGPAnalyzerKernelTest extends AnalyzerTestBase {
 
   /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
-    $this->installEntitySchema('user');
-    $this->installConfig(['inmail', 'mailhandler_d8', 'user']);
-    $this->installSchema('system', ['sequences']);
-
-    $this->parser = \Drupal::service('inmail.mime_parser');
   }
 
   /**
    * Tests features of PGP Analyzer plugin.
    */
   public function testPGAnalyzer() {
-    $raw_signed_mail = $this->getFileContent('signed/inline.eml');
+    $raw_signed_message = $this->getFileContent('signed/inline.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $signed_mail */
-    $signed_mail = $this->parser->parseMessage($raw_signed_mail);
+    $signed_mail = $this->parser->parseMessage($raw_signed_message);
 
     // Create a new role.
     $role = Role::create([
@@ -74,10 +54,9 @@ class PGPAnalyzerKernelTest extends KernelTestBase {
 
     $result = new ProcessorResult();
     $pgp_analyzer = AnalyzerConfig::load('pgp');
-    $analyzer_manager = \Drupal::service('plugin.manager.inmail.analyzer');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\PGPAnalyzer $analyzer */
-    $analyzer = $analyzer_manager->createInstance($pgp_analyzer->getPluginId(), $pgp_analyzer->getConfiguration());
+    $analyzer = $this->analyzerManager->createInstance($pgp_analyzer->getPluginId(), $pgp_analyzer->getConfiguration());
     $analyzer->analyze($signed_mail, $result);
 
     // Mailhandler analyzer result.
@@ -91,22 +70,6 @@ class PGPAnalyzerKernelTest extends KernelTestBase {
       $this->assertEquals($user, $mailhandler_result->getUser());
       $this->assertEquals('inline', $mailhandler_result->getPgpType());
     }
-  }
-
-  /**
-   * Returns the content of a requested file.
-   *
-   * See \Drupal\Tests\inmail\Kernel\ModeratorForwardTest.
-   *
-   * @param string $filename
-   *   The name of the file.
-   *
-   * @return string
-   *   The content of the file.
-   */
-  public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/eml/' . $filename;
-    return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 
 }
