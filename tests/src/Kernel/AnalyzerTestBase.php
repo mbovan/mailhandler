@@ -6,8 +6,6 @@ use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Provides the base for analyzer tests.
- *
- * @group mailhandler_d8
  */
 abstract class AnalyzerTestBase extends KernelTestBase {
 
