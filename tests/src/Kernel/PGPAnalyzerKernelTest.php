@@ -40,7 +40,6 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     $role->save();
 
     // Create a new user with "Mailhandler" role.
-    /** @var \Drupal\user\Entity\User $user */
     $user = User::create([
       'mail' => 'milos@example.com',
       'name' => 'Milos',

@@ -4,7 +4,6 @@ namespace Drupal\Tests\mailhandler_d8\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 
 /**
