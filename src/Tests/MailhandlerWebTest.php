@@ -97,20 +97,30 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('Fingerprint of the corresponding public key. This property will be automatically populated.'));
     $this->assertText(t('GPG Key field is used by Mailhandler to authenticate a user.'));
 
-    // @todo: Assert "Manage display" of GPG key field.
-    /*
+    // Add GPG public key to the user.
+    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/eml/keys/example.key';
+    $key = file_get_contents(DRUPAL_ROOT . '/' . $path);
+    $edit = [
+      'mailhandler_gpg_key[0][public_key]' => $key,
+    ];
+    $this->drupalPostForm('user/' . $this->user->id() . '/edit', $edit, t('Save'));
+
+    // Assert "Manage display" of GPG key field.
     $edit = [
       'fields[mailhandler_gpg_key][type]' => 'mailhandler_gpg',
     ];
     $this->drupalPostForm('admin/config/people/accounts/display', $edit, t('Save'));
+    $this->drupalPostAjaxForm(NULL, [], 'mailhandler_gpg_key_settings_edit');
     $edit = [
       'fields[mailhandler_gpg_key][settings_edit_form][settings][display]' => 'all',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->drupalPostAjaxForm(NULL, $edit, 'mailhandler_gpg_key_plugin_settings_update');
+    $this->drupalPostForm(NULL, [], t('Save'));
     $this->drupalGet('user/' . $this->user->id());
     $this->assertText(t('GPG Key'));
     $this->assertText(t('Public key'));
-    $this->assertText(t('Fingerprint')); */
+    $this->assertText(t('Fingerprint'));
+    $this->assertText('3196280356610A5FD807E8E4FB5B913AB957719B');
   }
 
 }
