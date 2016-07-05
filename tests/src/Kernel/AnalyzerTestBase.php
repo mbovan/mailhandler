@@ -43,7 +43,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
     $this->installEntitySchema('user');
     $this->installConfig(['inmail', 'mailhandler_d8', 'user']);

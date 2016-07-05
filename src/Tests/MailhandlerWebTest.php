@@ -120,7 +120,9 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('GPG Key'));
     $this->assertText(t('Public key'));
     $this->assertText(t('Fingerprint'));
-    $this->assertText('3196280356610A5FD807E8E4FB5B913AB957719B');
+    if (extension_loaded('gnupg')) {
+      $this->assertText('3196280356610A5FD807E8E4FB5B913AB957719B');
+    }
   }
 
 }
