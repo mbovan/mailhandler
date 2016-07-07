@@ -34,7 +34,7 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    
+
     // Mailhandler analyzer result.
     /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
     $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
