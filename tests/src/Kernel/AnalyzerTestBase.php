@@ -36,7 +36,6 @@ abstract class AnalyzerTestBase extends KernelTestBase {
    * @var \Drupal\inmail\AnalyzerManager
    */
   protected $analyzerManager;
-  
 
   /**
    * {@inheritdoc}
