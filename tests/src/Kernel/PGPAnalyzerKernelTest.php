@@ -46,7 +46,7 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     ]);
     $user->addRole($role->id());
     $user->save();
-    
+
     // Add a public key to the user.
     $user->set('mailhandler_gpg_key', ['public_key' => $this->getFileContent('keys/example.key')]);
     $user->save();
