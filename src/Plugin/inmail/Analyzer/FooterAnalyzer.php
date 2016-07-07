@@ -50,6 +50,7 @@ class FooterAnalyzer extends AnalyzerBase {
     if (count($body_match) > 1) {
       // Footer represents a string after the last occurrence of "-- \n" regex.
       $footer = end($body_match);
+      $footer = trim($footer);
 
       // Update the analyzed body without footer.
       $footer_key = count($body_match) - 1;
@@ -61,6 +62,7 @@ class FooterAnalyzer extends AnalyzerBase {
     elseif (preg_match('/On [A-Za-z]{3}, [A-Za-z]{3} [0-9]{1,2}, 20[0-9]{2} at [0-9]{1,2}:[0-9]{2} (AM|PM).+/', $body, $matches)) {
       $footer_line = reset($matches);
       $footer = strstr($body, $footer_line);
+      $footer = trim($footer);
       $result->setBody(strstr($body, $footer_line, TRUE));
     }
 
