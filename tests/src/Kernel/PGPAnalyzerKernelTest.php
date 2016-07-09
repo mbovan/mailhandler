@@ -26,7 +26,7 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
    * Tests features of PGP Analyzer plugin.
    */
   public function testPGAnalyzer() {
-    $raw_signed_message = $this->getFileContent('signed/inline.eml');
+    $raw_signed_message = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $signed_mail */
     $signed_mail = $this->parser->parseMessage($raw_signed_message);
 
@@ -48,7 +48,7 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     // Add a public key to the user.
-    $user->set('mailhandler_gpg_key', ['public_key' => $this->getFileContent('keys/example.key')]);
+    $user->set('mailhandler_gpg_key', ['public_key' => $this->getFileContent('keys/public.key')]);
     $user->save();
 
     $result = new ProcessorResult();

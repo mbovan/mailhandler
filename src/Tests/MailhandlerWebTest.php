@@ -98,7 +98,7 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('GPG Key field is used by Mailhandler to authenticate a user.'));
 
     // Add GPG public key to the user.
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/eml/keys/example.key';
+    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/keys/public.key';
     $key = file_get_contents(DRUPAL_ROOT . '/' . $path);
     $edit = [
       'mailhandler_gpg_key[0][public_key]' => $key,
@@ -121,7 +121,7 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('Public key'));
     $this->assertText(t('Fingerprint'));
     if (extension_loaded('gnupg')) {
-      $this->assertText('3196280356610A5FD807E8E4FB5B913AB957719B');
+      $this->assertText('266B764825A210EE327CE70F7396A4ED5F5EED56');
     }
   }
 

@@ -24,7 +24,7 @@ class BodyAnalyzerKernelTest extends AnalyzerTestBase {
    * Tests features of Body Analyzer plugin.
    */
   public function testBodyAnalyzer() {
-    $raw_message = $this->getFileContent('node.eml');
+    $raw_message = $this->getFileContent('eml/Plain.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
 

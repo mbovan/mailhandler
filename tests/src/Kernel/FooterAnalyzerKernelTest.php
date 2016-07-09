@@ -24,7 +24,7 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
    * Tests features of Footer Analyzer plugin.
    */
   public function testFooterAnalyzer() {
-    $raw_message = $this->getFileContent('node.eml');
+    $raw_message = $this->getFileContent('eml/Plain.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $node_mail */
     $message = $this->parser->parseMessage($raw_message);
 
@@ -40,14 +40,16 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
 
     $expected_processed_body = 'Hello, Drupal!';
-    $expected_footer = 'Milos Bovan
-milos@example.com';
+    $expected_footer = <<<EOF
+Milos Bovan
+milos@example.com
+EOF;
 
     $this->assertEquals($expected_processed_body, $mailhandler_result->getBody());
     $this->assertEquals($expected_footer, $mailhandler_result->getFooter());
 
     // Assert footer is not processed for signed messages.
-    $signed_mail = $this->getFileContent('signed/inline.eml');
+    $signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     $message = $this->parser->parseMessage($signed_mail);
     $result = new ProcessorResult();
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
