@@ -70,10 +70,7 @@ class PGPAnalyzer extends AnalyzerBase {
         foreach ($message->getParts() as $index => $part) {
           // Check the subtype of a content type.
           if ($part->getContentType()['subtype'] == 'pgp-signature') {
-            // Line endings must be converted to <CR><LF> sequence before the
-            // signature is verified.
-            // See https://tools.ietf.org/html/rfc2015#section-5.
-            $signature = preg_replace('~\R~u', "\r\n", $part->getBody());
+            $signature = $part->getBody();
             $result->setSignature($signature);
             $result->setPgpType('mime');
 
@@ -85,7 +82,7 @@ class PGPAnalyzer extends AnalyzerBase {
             // Add index of the signed message part to the context.
             $context['signed_text_index'] = $signed_text_index;
             // Include headers into the signed text.
-            $signed_text = preg_replace('~\R~u', "\r\n", $signed_text_part->toString());
+            $signed_text = $signed_text_part->toString();
             $result->setSignedText($signed_text);
 
             // Update the subject field.
@@ -109,7 +106,7 @@ class PGPAnalyzer extends AnalyzerBase {
         $ends_with_pgp_signature = trim(strstr($message->getBody(), "\n$pgp_signature_end")) === $pgp_signature_end;
         if ($has_pgp_signature && $ends_with_pgp_signature) {
           // Populate the context array with signature data.
-          $signed_text = preg_replace('~\R~u', "\r\n", $message->getBody());
+          $signed_text = $message->getBody();
           $result->setPgpType('inline');
           $result->setSignedText($signed_text);
           $result->setSignature(FALSE);
