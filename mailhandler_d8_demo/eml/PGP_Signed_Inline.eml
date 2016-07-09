@@ -1,0 +1,31 @@
+Delivery-date: Fri, 08 Jul 2016 08:37:13 -0700
+To: receiver@example.com
+From: Demo User <demo@example.com>
+Subject: PGP Signed Inline Example
+Message-ID: <577FC8A2.5010302@example.com>
+Date: Fri, 8 Jul 2016 17:37:06 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Hello!
+
+This is an inline-signed message created for demo purposes of Google
+Summer of Code 2016 - Mailhandler project.
+
+Best,
+Milos
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEbBAEBCAAGBQJXf8ifAAoJEERjGJDu+Xn6LjAH8wa0V0G10BPLR83ruZpDGJOJ
+0C2pDKQCyYU/HkTxHvhPm8UP8i8MSbLuHyzFzx+kOvUwSYUtFmdhTuTTPUGVStSi
+NCdb1FdNOlOOnygmy8bvNXlDd/96/T04v3wI+4lXa3SioFESwjJStOCaoMMCOscC
+c5PTqy3RsP7cAKzTKxgWpCogpmzFgd6Cn6PY1TWmFVHTN2VIzcvpsybQ7qZzRS0U
+ceFFYjlUtB4bBbOnF0Nvl55cf4BJO1+QMwiHuh5trERBM3j3qmwMObGutEb/TEno
+Vwq6CqQR1virnGNCokAUvtQ75gtVW5gKZOPHqjNAfjUw5tf/bW5P558S72dzcA==
+=ns4L
+-----END PGP SIGNATURE-----

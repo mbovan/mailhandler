@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * Implementations of install hooks for the Inmail module.
+ */
+
+use Drupal\node\Entity\NodeType;
+use Drupal\user\Entity\Role;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_install().
+ */
+function mailhandler_d8_demo_install() {
+  // Create "mailhandler" content type.
+  if (!$mailhandler = NodeType::load('mailhandler')) {
+    $mailhandler = NodeType::create([
+      'type' => 'mailhandler',
+      'name' => t('Mailhandler'),
+      'description' => t('Demo content type created to test Mailhandler module.'),
+    ]);
+    $mailhandler->save();
+  }
+
+  // Create "mailhandler" role.
+  if (!$role = Role::load('mailhandler')) {
+    $role = Role::create([
+      'id' => 'mailhandler',
+      'label' => 'Mailhandler',
+    ]);
+  }
+  $role->grantPermission('create mailhandler content');
+  $role->save();
+
+  // Get a demo public key.
+  $path = drupal_get_path('module', 'mailhandler_d8_demo') . '/keys/public.key';
+  $public_key = file_get_contents(DRUPAL_ROOT . '/' . $path);
+
+  // Create "mailhandler" user.
+  $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
+  if (!$demo = reset($users)) {
+    $demo = User::create([
+      'mail' => 'demo@example.com',
+      'name' => 'Demo User',
+      'status' => TRUE,
+      'mailhandler_gpg_key' => [
+        'public_key' => $public_key,
+        'fingerprint' => '266B764825A210EE327CE70F7396A4ED5F5EED56',
+      ],
+    ]);
+  }
+  $demo->addRole($role->id());
+  $demo->save();
+}

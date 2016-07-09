@@ -1,0 +1,8 @@
+name: Mailhandler D8 Demo
+type: module
+description: An example module for Mailhandler module.
+package: mailhandler
+version: 8.x-1.x
+core: 8.x
+dependencies:
+  - inmail_demo
