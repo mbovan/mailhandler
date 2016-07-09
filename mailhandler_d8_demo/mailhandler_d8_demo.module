@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Hook implementations for Mailhandler Demo module.
+ */
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function mailhandler_d8_demo_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'inmail_demo.paste') {
+    $inmail_demo_examples = $form['example']['#options'];
+
+    $directory = drupal_get_path('module', 'mailhandler_d8_demo') . '/eml/';
+    $examples = array_keys(file_scan_directory($directory, '/.*/'));
+    $mailhandler_demo_examples = array_map('basename', array_combine($examples, $examples));
+
+    $form['example']['#options'] = array_merge($inmail_demo_examples, $mailhandler_demo_examples);
+  }
+}

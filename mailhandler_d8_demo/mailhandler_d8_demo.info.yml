@@ -6,3 +6,4 @@ version: 8.x-1.x
 core: 8.x
 dependencies:
   - inmail_demo
+  - mailhandler_d8
