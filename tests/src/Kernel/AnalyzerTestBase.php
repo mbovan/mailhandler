@@ -60,7 +60,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/eml/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 

@@ -25,7 +25,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
    * Tests features of Entity Type Analyzer plugin.
    */
   public function testEntityTypeAnalyzer() {
-    $raw_message = $this->getFileContent('node.eml');
+    $raw_message = $this->getFileContent('eml/Plain.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $node_mail */
     $message = $this->parser->parseMessage($raw_message);
 

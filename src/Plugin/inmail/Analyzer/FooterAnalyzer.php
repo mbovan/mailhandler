@@ -50,6 +50,7 @@ class FooterAnalyzer extends AnalyzerBase {
     if (count($body_match) > 1) {
       // Footer represents a string after the last occurrence of "-- \n" regex.
       $footer = end($body_match);
+      $footer = trim($footer);
 
       // Update the analyzed body without footer.
       $footer_key = count($body_match) - 1;

@@ -86,7 +86,7 @@ class MailhandlerNodeTest extends KernelTestBase {
    * Tests features of Mailhandler Node plugin.
    */
   public function testMailhandlerNodePlugin() {
-    $raw_node_mail = $this->getFileContent('node.eml');
+    $raw_node_mail = $this->getFileContent('eml/Plain.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $node_mail */
     $node_mail = $this->parser->parseMessage($raw_node_mail);
 
@@ -135,12 +135,12 @@ class MailhandlerNodeTest extends KernelTestBase {
    * Tests signed mail messages.
    */
   public function testSignedMails() {
-    $raw_signed_mail = $this->getFileContent('signed/inline.eml');
+    $raw_signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     /** @var \Drupal\inmail\MIME\MessageInterface $signed_mail */
     $signed_mail = $this->parser->parseMessage($raw_signed_mail);
 
     // Add a public key to the user.
-    $this->user->set('mailhandler_gpg_key', ['public_key' => $this->getFileContent('keys/example.key')]);
+    $this->user->set('mailhandler_gpg_key', ['public_key' => $this->getFileContent('keys/public.key')]);
     $this->user->save();
 
     // Update the handler configuration.
@@ -180,7 +180,7 @@ class MailhandlerNodeTest extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/eml/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 
