@@ -43,10 +43,15 @@ class EntityTypeAnalyzer extends AnalyzerBase {
     $entity_type = NULL;
     $bundle = NULL;
 
-    if (preg_match('/^\[(\w+)\]\[(\w+)\]\s+/', $subject, $matches)) {
+    // Match entity type.
+    if (preg_match('/^\[(\w+)\]/', $subject, $matches)) {
       $entity_type = \Drupal::entityTypeManager()->hasDefinition($matches[1]) ? $matches[1] : NULL;
-      $bundle = $this->getBundle($entity_type, $matches[2]);
       $subject = str_replace(reset($matches), '', $subject);
+      // In case entity type was identified successfully, continue to bundle.
+      if ($entity_type && preg_match('/^\[(\w+)\]\s+/', $subject, $matches)) {
+        $bundle = $this->getBundle($entity_type, $matches[1]);
+        $subject = str_replace(reset($matches), '', $subject);
+      }
     }
 
     $result->setEntityType($entity_type);
