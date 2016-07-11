@@ -43,6 +43,20 @@ class MailhandlerWebTest extends WebTestBase {
   }
 
   /**
+   * Tests user interface of Mailhandler Comment plugin.
+   */
+  protected function testMailhandlerCommentUi() {
+    $this->drupalGet('admin/config/system/inmail/handlers');
+    $this->assertText(t('Post comments via email'));
+    $this->assertText(t('Comment'));
+
+    $mailhandler_comment_path = 'admin/config/system/inmail/handlers/mailhandler_comment';
+    $this->drupalGet($mailhandler_comment_path);
+    $this->assertText(t('Post comments via email'));
+    $this->assertText('mailhandler_comment');
+  }
+
+  /**
    * Tests user interface of Mailhandler Node plugin.
    */
   protected function testMailhandlerNodeUi() {
