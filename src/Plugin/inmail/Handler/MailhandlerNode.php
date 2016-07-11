@@ -70,6 +70,12 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
     try {
       $result = $this->getMailhandlerResult($processor_result);
 
+      if ($result->getEntityType() != 'node') {
+        // Do not run this handler in case
+        // the identified entity type is not node.
+        return;
+      }
+
       // Authenticate a user.
       $this->authenticateUser($result);
 
