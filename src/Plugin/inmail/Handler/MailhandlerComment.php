@@ -5,6 +5,7 @@ namespace Drupal\mailhandler_d8\Plugin\inmail\Handler;
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
@@ -140,7 +141,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
 
     // Create a comment entity.
     $comment = Comment::create([
-      'entity_type' => 'node',
+      'entity_type' => $this->configuration['entity_type'],
       'entity_id' => $node_id,
       'uid' => $user,
       'subject' => $subject,
@@ -186,6 +187,58 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     }
 
     return $user;
+  }
+
+  /**
+   * Returns an array of entity types.
+   *
+   * @return array
+   *   An array of entity types.
+   */
+  protected function getEntityTypes() {
+    // Get a mapping of entity types (bundles) with comment fields.
+    $comment_entity_types = \Drupal::entityManager()->getFieldMapByFieldType('comment');
+    $entity_types = [];
+
+    foreach ($comment_entity_types as $entity_type => $bundles) {
+      $entity_types[$entity_type] = $this->entityTypeManager->getDefinition($entity_type)->getLabel();
+    }
+
+    return $entity_types;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    return [
+      'entity_type' => 'node',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
+
+    $form['entity_type'] = [
+      '#title' => $this->t('Entity type'),
+      '#type' => 'select',
+      '#options' => $this->getEntityTypes(),
+      '#default_value' => $this->configuration['entity_type'],
+      '#description' => $this->t('Select a referenced entity type.'),
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::submitConfigurationForm($form, $form_state);
+    $this->configuration['entity_type'] = $form_state->getValue('entity_type');
   }
 
 }

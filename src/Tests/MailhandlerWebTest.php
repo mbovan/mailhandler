@@ -54,6 +54,7 @@ class MailhandlerWebTest extends WebTestBase {
     $this->drupalGet($mailhandler_comment_path);
     $this->assertText(t('Post comments via email'));
     $this->assertText('mailhandler_comment');
+    $this->assertText(t('Select a referenced entity type.'));
   }
 
   /**

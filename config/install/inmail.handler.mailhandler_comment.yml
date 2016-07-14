@@ -2,4 +2,5 @@ langcode: en
 id: mailhandler_comment
 label: Post comments via email
 plugin: mailhandler_comment
-configuration: { }
+configuration:
+  entity_type: node
