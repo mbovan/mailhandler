@@ -1,0 +1,9 @@
+name: Mailhandler D8 Comment module
+type: module
+description: A Mailhandler module that provides support for comments.
+package: mailhandler
+version: 8.x-1.x
+core: 8.x
+dependencies:
+  - mailhandler_d8
+  - comment

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Plugin\inmail\Handler;
+namespace Drupal\mailhandler_d8_comment\Plugin\inmail\Handler;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
