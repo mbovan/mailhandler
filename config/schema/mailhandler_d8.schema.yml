@@ -7,15 +7,6 @@ inmail.plugin.handler.mailhandler_node:
       label: 'Content type of a node'
       type: string
 
-# Mailhandler Comment settings schema.
-inmail.plugin.handler.mailhandler_comment:
-  label: 'Comment handler configuration'
-  type: mapping
-  mapping:
-    entity_type:
-      label: 'Referenced entity type'
-      type: string
-
 field.formatter.settings.mailhandler_gpg:
   type: mapping
   label: 'GPG key formatter settings'

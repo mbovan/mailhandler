@@ -17,8 +17,7 @@ class MailhandlerCommentWebTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8',
-    'comment',
+    'mailhandler_d8_comment',
     'block',
     'field_ui',
   ];

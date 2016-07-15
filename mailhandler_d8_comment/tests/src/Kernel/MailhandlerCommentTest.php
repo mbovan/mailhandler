@@ -1,11 +1,12 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler_d8_comment\Kernel;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\Entity\DelivererConfig;
+use Drupal\inmail\Entity\HandlerConfig;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -27,6 +28,7 @@ class MailhandlerCommentTest extends KernelTestBase {
    */
   public static $modules = [
     'mailhandler_d8',
+    'mailhandler_d8_comment',
     'inmail',
     'comment',
     'system',
@@ -46,7 +48,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     $this->installEntitySchema('comment');
     $this->installEntitySchema('inmail_handler');
     $this->installSchema('system', ['sequences']);
-    $this->installConfig(['inmail', 'mailhandler_d8', 'node', 'user', 'comment']);
+    $this->installConfig(['inmail', 'mailhandler_d8', 'mailhandler_d8_comment', 'node', 'user', 'comment']);
 
     // Create a sample node type.
     $this->blog = NodeType::create([
@@ -93,6 +95,11 @@ class MailhandlerCommentTest extends KernelTestBase {
     $raw_comment_mail = $this->getFileContent('eml/Comment.eml');
     // Replace a node ID with an actual node ID.
     $raw_comment_mail = str_replace('[comment][#1]', '[comment][#' . $this->node->id() . ']', $raw_comment_mail);
+
+    // Assert default handler configuration.
+    /** @var \Drupal\inmail\Entity\HandlerConfig $handler_config */
+    $handler_config = HandlerConfig::load('mailhandler_comment');
+    $this->assertEquals('node', $handler_config->getConfiguration()['entity_type']);
 
     // Process the mail.
     $this->processor->process($raw_comment_mail, $this->deliverer);
