@@ -4,6 +4,8 @@ namespace Drupal\Tests\mailhandler_d8_comment\Kernel;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
+use Drupal\comment\Entity\CommentType;
+use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\Entity\DelivererConfig;
 use Drupal\inmail\Entity\HandlerConfig;
@@ -20,6 +22,8 @@ use Drupal\user\RoleInterface;
  * @group mailhandler_d8
  */
 class MailhandlerCommentTest extends KernelTestBase {
+
+  use CommentTestTrait;
 
   /**
    * Modules to install.
@@ -81,6 +85,16 @@ class MailhandlerCommentTest extends KernelTestBase {
       'title' => 'Sample blog post',
     ]);
     $this->node->save();
+
+    // Create a comment type.
+    $comment_type = CommentType::create([
+      'id' => 'comment',
+      'label' => 'Default comments',
+      'description' => 'Default comment field',
+      'target_entity_type_id' => 'node',
+    ]);
+    $comment_type->save();
+    $this->addDefaultCommentField('node', $this->blog->id());
 
     $this->processor = \Drupal::service('inmail.processor');
     $this->parser = \Drupal::service('inmail.mime_parser');
@@ -164,7 +178,7 @@ class MailhandlerCommentTest extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler_d8_comment') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 
