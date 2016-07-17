@@ -4,6 +4,7 @@ namespace Drupal\mailhandler_d8_comment\Plugin\inmail\Handler;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
+use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -12,6 +13,7 @@ use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
+use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -127,14 +129,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    *   Throws an exception in case user is not authorized to create a comment.
    */
   protected function createComment(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
-    $subject = $result->getSubject();
-    if (!preg_match('/^\[#(\d+)\]\s+/', $subject, $matches)) {
-      throw new \Exception('Referenced entity ID of the comment could not be identified.');
-    }
+    $entity_id = $this->getEntityId($result);
 
-    // Get a node ID and update the subject.
-    $node_id = $matches[1];
-    $subject = str_replace(reset($matches), '', $subject);
 
     // Validate whether user is allowed to post comments.
     $user = $this->validateUser($result);
@@ -142,9 +138,9 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     // Create a comment entity.
     $comment = Comment::create([
       'entity_type' => $this->configuration['entity_type'],
-      'entity_id' => $node_id,
+      'entity_id' => $entity_id,
       'uid' => $user,
-      'subject' => $subject,
+      'subject' => $result->getSubject(),
       'comment_body' => [
         'value' => $result->getBody(),
         'format' => 'basic_html',
@@ -239,6 +235,49 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
     $this->configuration['entity_type'] = $form_state->getValue('entity_type');
+  }
+
+  /**
+   * Returns a referenced entity ID.
+   *
+   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   *   The analzer result instance.
+   *
+   * @return string
+   *   The entity ID.
+   *
+   * @throws \Exception.
+   *   Throws an exception in case entity ID is not valid.
+   */
+  protected function getEntityId(MailhandlerAnalyzerResultInterface $result) {
+    $subject = $result->getSubject();
+    if (!preg_match('/^\[#(\d+)\]\s+/', $subject, $matches)) {
+      throw new \Exception('Referenced entity ID of the comment could not be identified.');
+    }
+
+    // Get an entity ID and update the subject.
+    $entity_id = $matches[1];
+    $subject = str_replace(reset($matches), '', $subject);
+    $result->setSubject($subject);
+
+    $entity_type = $this->configuration['entity_type'];
+    $commentable_entity_types = \Drupal::entityManager()->getFieldMapByFieldType('comment');;
+
+    if (!isset($commentable_entity_types[$entity_type])) {
+      throw new \Exception('The referenced entity type ' . $entity_type . ' does not support comments.');
+    }
+
+    if (!$entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id)) {
+      throw new \Exception('The referenced entity ID (' . $entity_type . ':' . $entity_id . ') does not exists.');
+    }
+
+    $allowed_entity_bundles = $commentable_entity_types[$entity_type]['comment']['bundles'];
+    $entity_bundle = $entity->bundle();
+    if (!in_array($entity_bundle, $allowed_entity_bundles)) {
+      throw new \Exception('The bundle ' . $entity_bundle . ' of entity (' . $entity_type . ':' . $entity_id . ') does not support comments.');
+    }
+
+    return $entity_id;
   }
 
 }
