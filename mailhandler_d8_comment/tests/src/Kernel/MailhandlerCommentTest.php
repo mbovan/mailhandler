@@ -51,6 +51,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installEntitySchema('comment');
     $this->installEntitySchema('inmail_handler');
+    $this->installSchema('comment', ['comment_entity_statistics']);
     $this->installSchema('system', ['sequences']);
     $this->installConfig(['inmail', 'mailhandler_d8', 'mailhandler_d8_comment', 'node', 'user', 'comment']);
 
@@ -86,15 +87,8 @@ class MailhandlerCommentTest extends KernelTestBase {
     ]);
     $this->node->save();
 
-    // Create a comment type.
-    $comment_type = CommentType::create([
-      'id' => 'comment',
-      'label' => 'Default comments',
-      'description' => 'Default comment field',
-      'target_entity_type_id' => 'node',
-    ]);
-    $comment_type->save();
-    $this->addDefaultCommentField('node', $this->blog->id());
+    // Add a comment field to "blog".
+    $this->addDefaultCommentField('node', 'blog');
 
     $this->processor = \Drupal::service('inmail.processor');
     $this->parser = \Drupal::service('inmail.mime_parser');
