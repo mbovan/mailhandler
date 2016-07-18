@@ -4,6 +4,7 @@
  * Implementations of install hooks for the Inmail module.
  */
 
+use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
@@ -13,14 +14,15 @@ use Drupal\user\Entity\User;
  */
 function mailhandler_d8_demo_install() {
   // Create "mailhandler" content type.
-  if (!$mailhandler = NodeType::load('mailhandler')) {
-    $mailhandler = NodeType::create([
+  if (!$mailhandler_node_type = NodeType::load('mailhandler')) {
+    $mailhandler_node_type = NodeType::create([
       'type' => 'mailhandler',
       'name' => t('Mailhandler'),
       'description' => t('Demo content type created to test Mailhandler module.'),
     ]);
-    $mailhandler->save();
+    $mailhandler_node_type->save();
   }
+  node_add_body_field($mailhandler_node_type);
 
   // Create "mailhandler" role.
   if (!$role = Role::load('mailhandler')) {
@@ -30,7 +32,32 @@ function mailhandler_d8_demo_install() {
     ]);
   }
   $role->grantPermission('create mailhandler content');
+  $role->grantPermission('post comments');
   $role->save();
+
+  // Update the user form display.
+  entity_get_form_display('user', 'user', 'default')
+    ->setComponent('mailhandler_gpg_key', [
+      'type' => 'mailhandler_gpg',
+      'weight' => 5,
+      'settings' => [
+        'rows' => 20,
+        'placeholder' => 'Begins with "-----BEGIN PGP PUBLIC KEY BLOCK-----"',
+      ],
+      'third_party_settings' => [],
+    ])->save();
+
+  // Update user display with GPG key.
+  entity_get_display('user', 'user', 'default')
+    ->setComponent('mailhandler_gpg_key', [
+      'type' => 'mailhandler_gpg',
+      'weight' => 2,
+      'label' => 'above',
+      'settings' => [
+        'display' => 'fingerprint',
+      ],
+      'third_party_settings' => [],
+    ])->save();
 
   // Get a demo public key.
   $path = drupal_get_path('module', 'mailhandler_d8_demo') . '/keys/public.key';
@@ -38,8 +65,8 @@ function mailhandler_d8_demo_install() {
 
   // Create "mailhandler" user.
   $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
-  if (!$demo = reset($users)) {
-    $demo = User::create([
+  if (!$demo_user = reset($users)) {
+    $demo_user = User::create([
       'mail' => 'demo@example.com',
       'name' => 'Demo User',
       'status' => TRUE,
@@ -49,6 +76,23 @@ function mailhandler_d8_demo_install() {
       ],
     ]);
   }
-  $demo->addRole($role->id());
-  $demo->save();
+  $demo_user->addRole($role->id());
+  $demo_user->save();
+
+  // Create a demo node.
+  $demo_node = Node::create([
+    'title' => t('Mailhandler Demo'),
+    'type' => $mailhandler_node_type->id(),
+    'uid' => $demo_user->id(),
+    'body' => [
+      'value' => '<p>' . t('Welcome to Mailhandler Demo module!') . '</p>'
+        . '<p>' . t('The demo module has added to present Mailhandler features.') . '</p>',
+        // @todo: Improve demo content in https://www.drupal.org/node/2731539.
+      'format' => 'basic_html',
+    ],
+  ]);
+  $demo_node->save();
+
+  // Set the demo node as the front page.
+  \Drupal::configFactory()->getEditable('system.site')->set('page.front', '/node/' . $demo_node->id())->save();
 }
