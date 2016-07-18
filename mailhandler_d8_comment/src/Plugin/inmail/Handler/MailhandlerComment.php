@@ -13,7 +13,6 @@ use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
-use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

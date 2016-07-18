@@ -2,6 +2,8 @@
 
 namespace Drupal\mailhandler_d8_comment\Tests;
 
+use Drupal\comment\Tests\CommentTestTrait;
+use Drupal\node\Entity\NodeType;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -10,6 +12,8 @@ use Drupal\simpletest\WebTestBase;
  * @group mailhandler_d8
  */
 class MailhandlerCommentWebTest extends WebTestBase {
+
+  use CommentTestTrait;
 
   /**
    * Modules to enable.
@@ -30,6 +34,11 @@ class MailhandlerCommentWebTest extends WebTestBase {
     $this->drupalPlaceBlock('local_tasks_block');
     $this->drupalPlaceBlock('local_actions_block');
     $this->drupalPlaceBlock('page_title_block');
+
+    // Create a sample node type.
+    $this->blog = NodeType::create(['type' => 'blog', 'name' => 'Blog']);
+    $this->blog->save();
+    $this->addDefaultCommentField('node', 'blog');
 
     // Create a test user and log in.
     $this->user = $this->drupalCreateUser([
@@ -55,6 +64,8 @@ class MailhandlerCommentWebTest extends WebTestBase {
     $this->assertText(t('Post comments via email'));
     $this->assertText('mailhandler_comment');
     $this->assertText(t('Select a referenced entity type.'));
+    $comment_entity_types = (array) $this->xpath('//*[@id="edit-entity-type"]')[0]->option;
+    $this->assertTrue(in_array('Content', $comment_entity_types));
   }
 
 }

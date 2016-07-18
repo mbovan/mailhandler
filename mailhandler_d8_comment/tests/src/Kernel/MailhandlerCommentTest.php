@@ -4,7 +4,6 @@ namespace Drupal\Tests\mailhandler_d8_comment\Kernel;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
-use Drupal\comment\Entity\CommentType;
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\Entity\DelivererConfig;
