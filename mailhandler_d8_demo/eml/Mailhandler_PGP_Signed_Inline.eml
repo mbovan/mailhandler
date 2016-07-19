@@ -1,7 +1,7 @@
 Delivery-date: Fri, 08 Jul 2016 08:37:13 -0700
 To: receiver@example.com
 From: Demo User <demo@example.com>
-Subject: PGP Signed Inline Example
+Subject: [node][mailhandler] PGP Signed Inline Example
 Message-ID: <577FC8A2.5010302@example.com>
 Date: Fri, 8 Jul 2016 17:37:06 +0200
 MIME-Version: 1.0
@@ -21,11 +21,11 @@ Milos
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEbBAEBCAAGBQJXf8ifAAoJEERjGJDu+Xn6LjAH8wa0V0G10BPLR83ruZpDGJOJ
-0C2pDKQCyYU/HkTxHvhPm8UP8i8MSbLuHyzFzx+kOvUwSYUtFmdhTuTTPUGVStSi
-NCdb1FdNOlOOnygmy8bvNXlDd/96/T04v3wI+4lXa3SioFESwjJStOCaoMMCOscC
-c5PTqy3RsP7cAKzTKxgWpCogpmzFgd6Cn6PY1TWmFVHTN2VIzcvpsybQ7qZzRS0U
-ceFFYjlUtB4bBbOnF0Nvl55cf4BJO1+QMwiHuh5trERBM3j3qmwMObGutEb/TEno
-Vwq6CqQR1virnGNCokAUvtQ75gtVW5gKZOPHqjNAfjUw5tf/bW5P558S72dzcA==
-=ns4L
+iQEcBAEBCAAGBQJXjgRFAAoJEHOWpO1fXu1Wz/8H/2CPZz0TqRgPQ5mx9Mz6ypAy
+6tSuko7iP0Z0ZEupebUGqyySUAt54abpfVde/CFVEaaa+Oc0eNFHA0615u7PVLe3
+kJ9oHcLYVDrXibsYe/7NP8V5Bastzr+Ow0aaEbz8z14pqmIEOA7xAkQP7yaX9hWZ
+V8acD/QkGVjJUM23AI5jQIRNhmBxZQcTlbqbB6B3FvUYP/Zhrr7jrcMpA7Mi0u9A
+7iEBXcVPCf8cwJL4dTPdLv9/+q4Ic0q8XKxHrhLlEOp9qMeabnLQVaXaYmrUtuvb
+gmzQ56piANYuJyCiYoQegRn20IoUBIscrZXtwYlFgbN7MIf8JaQ8WnJZVXTO/FM=
+=y4Xy
 -----END PGP SIGNATURE-----
