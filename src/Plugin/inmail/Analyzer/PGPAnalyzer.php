@@ -205,7 +205,7 @@ class PGPAnalyzer extends AnalyzerBase {
       // Since the message was already checked for valid PGP signature, we
       // can use the analyzed result instead of the raw message body.
       // See \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\MailhandlerAnalyzer::isSigned
-      $pgp_parts = explode("-----BEGIN PGP SIGNATURE-----\r\n", $result->getSignedText());
+      $pgp_parts = explode("-----BEGIN PGP SIGNATURE-----", $result->getSignedText());
       // Get the message digest by following RFC 4880 recommendations.
       // See https://tools.ietf.org/html/rfc4880#section-7.
       // Remove PGP message header.
