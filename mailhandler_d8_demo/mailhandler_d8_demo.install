@@ -1,9 +1,11 @@
 <?php
 /**
  * @file
- * Implementations of install hooks for the Inmail module.
+ * Implementations of install hooks for Mailhandler Demo module.
  */
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
@@ -63,8 +65,10 @@ function mailhandler_d8_demo_install() {
   $path = drupal_get_path('module', 'mailhandler_d8_demo') . '/keys/public.key';
   $public_key = file_get_contents(DRUPAL_ROOT . '/' . $path);
 
+  $entity_manager = \Drupal::entityManager();
+
   // Create "mailhandler" user.
-  $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
+  $users = $entity_manager->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
   if (!$demo_user = reset($users)) {
     $demo_user = User::create([
       'mail' => 'demo@example.com',
@@ -95,4 +99,71 @@ function mailhandler_d8_demo_install() {
 
   // Set the demo node as the front page.
   \Drupal::configFactory()->getEditable('system.site')->set('page.front', '/node/' . $demo_node->id())->save();
+
+  // Add comment field to mailhandler content type.
+  // Create the comment type if needed.
+  $comment_type_storage = $entity_manager->getStorage('comment_type');
+  if (!$comment_type = $comment_type_storage->load('comment')) {
+    $comment_type_storage->create([
+      'id' => 'comment',
+      'label' => Unicode::ucfirst('comment'),
+      'target_entity_type_id' => 'node',
+      'description' => 'Default comment field',
+    ])->save();
+  }
+  // Add a body field to the comment type.
+  \Drupal::service('comment.manager')->addBodyField('comment');
+
+  // Add a comment field to the host entity type. Create the field storage if
+  // needed.
+  if (!array_key_exists('comment', $entity_manager->getFieldStorageDefinitions('node'))) {
+    $entity_manager->getStorage('field_storage_config')->create([
+      'entity_type' => 'node',
+      'field_name' => 'comment',
+      'type' => 'comment',
+      'translatable' => TRUE,
+      'settings' => [
+        'comment_type' => 'comment',
+      ],
+    ])->save();
+  }
+  // Create the field if needed, and configure its form and view displays.
+  if (!array_key_exists('comment', $entity_manager->getFieldDefinitions('node', 'mailhandler'))) {
+    $entity_manager->getStorage('field_config')->create([
+      'label' => 'Comments',
+      'description' => '',
+      'field_name' => 'comment',
+      'entity_type' => 'node',
+      'bundle' => 'mailhandler',
+      'required' => 1,
+      'default_value' => [
+        [
+          'status' => CommentItemInterface::OPEN,
+          'cid' => 0,
+          'last_comment_name' => '',
+          'last_comment_timestamp' => 0,
+          'last_comment_uid' => 0,
+        ],
+      ],
+    ])->save();
+
+    // Entity form displays: assign widget settings for the 'default' form
+    // mode, and hide the field in all other form modes.
+    entity_get_form_display('node', 'mailhandler', 'default')
+      ->setComponent('comment', array(
+        'type' => 'comment_default',
+        'weight' => 102,
+      ))
+      ->save();
+
+    // Entity view displays: assign widget settings for the 'default' view
+    // mode, and hide the field in all other view modes.
+    entity_get_display('node', 'mailhandler', 'default')
+      ->setComponent('comment', [
+        'label' => 'above',
+        'type' => 'comment_default',
+        'weight' => 102,
+      ])
+      ->save();
+  }
 }
