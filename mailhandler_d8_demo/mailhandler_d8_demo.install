@@ -1,9 +1,12 @@
 <?php
 /**
  * @file
- * Implementations of install hooks for the Inmail module.
+ * Implementations of install hooks for Mailhandler Demo module.
  */
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+use Drupal\Component\Utility\Unicode;
+use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
@@ -13,14 +16,15 @@ use Drupal\user\Entity\User;
  */
 function mailhandler_d8_demo_install() {
   // Create "mailhandler" content type.
-  if (!$mailhandler = NodeType::load('mailhandler')) {
-    $mailhandler = NodeType::create([
+  if (!$mailhandler_node_type = NodeType::load('mailhandler')) {
+    $mailhandler_node_type = NodeType::create([
       'type' => 'mailhandler',
       'name' => t('Mailhandler'),
       'description' => t('Demo content type created to test Mailhandler module.'),
     ]);
-    $mailhandler->save();
+    $mailhandler_node_type->save();
   }
+  node_add_body_field($mailhandler_node_type);
 
   // Create "mailhandler" role.
   if (!$role = Role::load('mailhandler')) {
@@ -30,16 +34,43 @@ function mailhandler_d8_demo_install() {
     ]);
   }
   $role->grantPermission('create mailhandler content');
+  $role->grantPermission('post comments');
   $role->save();
+
+  // Update the user form display.
+  entity_get_form_display('user', 'user', 'default')
+    ->setComponent('mailhandler_gpg_key', [
+      'type' => 'mailhandler_gpg',
+      'weight' => 5,
+      'settings' => [
+        'rows' => 20,
+        'placeholder' => 'Begins with "-----BEGIN PGP PUBLIC KEY BLOCK-----"',
+      ],
+      'third_party_settings' => [],
+    ])->save();
+
+  // Update user display with GPG key.
+  entity_get_display('user', 'user', 'default')
+    ->setComponent('mailhandler_gpg_key', [
+      'type' => 'mailhandler_gpg',
+      'weight' => 2,
+      'label' => 'above',
+      'settings' => [
+        'display' => 'fingerprint',
+      ],
+      'third_party_settings' => [],
+    ])->save();
 
   // Get a demo public key.
   $path = drupal_get_path('module', 'mailhandler_d8_demo') . '/keys/public.key';
   $public_key = file_get_contents(DRUPAL_ROOT . '/' . $path);
 
+  $entity_manager = \Drupal::entityManager();
+
   // Create "mailhandler" user.
-  $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
-  if (!$demo = reset($users)) {
-    $demo = User::create([
+  $users = $entity_manager->getStorage('user')->loadByProperties(['mail' => 'demo@example.com']);
+  if (!$demo_user = reset($users)) {
+    $demo_user = User::create([
       'mail' => 'demo@example.com',
       'name' => 'Demo User',
       'status' => TRUE,
@@ -49,6 +80,92 @@ function mailhandler_d8_demo_install() {
       ],
     ]);
   }
-  $demo->addRole($role->id());
-  $demo->save();
+  $demo_user->addRole($role->id());
+  $demo_user->save();
+
+  // Create a demo node.
+  $demo_node = Node::create([
+    'title' => t('Mailhandler Demo'),
+    'type' => $mailhandler_node_type->id(),
+    'uid' => $demo_user->id(),
+    'body' => [
+      'value' => '<p>' . t('Welcome to Mailhandler Demo module!') . '</p>'
+        . '<p>' . t('The demo module has added to present Mailhandler features.') . '</p>'
+        . '<iframe src="https://player.vimeo.com/video/175383067" width="640" height="366" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+        . '<p><a href="https://vimeo.com/175383067">Drupal 8 module demo: Mailhandler</a> from <a href="https://vimeo.com/user54537495">Milos Bovan</a> on <a href="https://vimeo.com">Vimeo</a>.</p>',
+        // @todo: Improve demo content in https://www.drupal.org/node/2731539.
+      'format' => 'full_html',
+    ],
+  ]);
+  $demo_node->save();
+
+  // Set the demo node as the front page.
+  \Drupal::configFactory()->getEditable('system.site')->set('page.front', '/node/' . $demo_node->id())->save();
+
+  // Add comment field to mailhandler content type.
+  // Create the comment type if needed.
+  $comment_type_storage = $entity_manager->getStorage('comment_type');
+  if (!$comment_type = $comment_type_storage->load('comment')) {
+    $comment_type_storage->create([
+      'id' => 'comment',
+      'label' => Unicode::ucfirst('comment'),
+      'target_entity_type_id' => 'node',
+      'description' => 'Default comment field',
+    ])->save();
+  }
+  // Add a body field to the comment type.
+  \Drupal::service('comment.manager')->addBodyField('comment');
+
+  // Add a comment field to the host entity type. Create the field storage if
+  // needed.
+  if (!array_key_exists('comment', $entity_manager->getFieldStorageDefinitions('node'))) {
+    $entity_manager->getStorage('field_storage_config')->create([
+      'entity_type' => 'node',
+      'field_name' => 'comment',
+      'type' => 'comment',
+      'translatable' => TRUE,
+      'settings' => [
+        'comment_type' => 'comment',
+      ],
+    ])->save();
+  }
+  // Create the field if needed, and configure its form and view displays.
+  if (!array_key_exists('comment', $entity_manager->getFieldDefinitions('node', 'mailhandler'))) {
+    $entity_manager->getStorage('field_config')->create([
+      'label' => 'Comments',
+      'description' => '',
+      'field_name' => 'comment',
+      'entity_type' => 'node',
+      'bundle' => 'mailhandler',
+      'required' => 1,
+      'default_value' => [
+        [
+          'status' => CommentItemInterface::OPEN,
+          'cid' => 0,
+          'last_comment_name' => '',
+          'last_comment_timestamp' => 0,
+          'last_comment_uid' => 0,
+        ],
+      ],
+    ])->save();
+
+    // Entity form displays: assign widget settings for the 'default' form
+    // mode, and hide the field in all other form modes.
+    entity_get_form_display('node', 'mailhandler', 'default')
+      ->setComponent('comment', array(
+        'type' => 'comment_default',
+        'weight' => 102,
+      ))
+      ->save();
+
+    // Entity view displays: assign widget settings for the 'default' view
+    // mode, and hide the field in all other view modes.
+    entity_get_display('node', 'mailhandler', 'default')
+      ->setComponent('comment', [
+        'label' => 'above',
+        'type' => 'comment_default',
+        'weight' => 102,
+      ])
+      ->save();
+  }
 }
