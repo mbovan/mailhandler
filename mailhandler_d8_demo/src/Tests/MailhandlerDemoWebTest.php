@@ -42,9 +42,10 @@ class MailhandlerDemoWebTest extends WebTestBase {
     $sample_messages = (array) $this->xpath('//*[@id="edit-example"]')[0]->option;
 
     // Assert sample messages are available in the list of sample messages.
-    $this->assertTrue(in_array('PGP_Signed_MIME.eml', $sample_messages), 'PGP Signed MIME message is in the last of sample messages.');
-    $this->assertTrue(in_array('PGP_Signed_MIME_HTML.eml', $sample_messages), 'PGP Signed MIME HTML message is in the last of sample messages.');
-    $this->assertTrue(in_array('PGP_Signed_Inline.eml', $sample_messages), 'PGP Signed Inline message is in the last of sample messages.');
+    $this->assertTrue(in_array('Mailhandler_PGP_Signed_MIME.eml', $sample_messages), 'PGP Signed MIME message is in the list of sample mail messages.');
+    $this->assertTrue(in_array('Mailhandler_PGP_Signed_MIME_HTML.eml', $sample_messages), 'PGP Signed MIME HTML message is in the list of sample mail messages.');
+    $this->assertTrue(in_array('Mailhandler_PGP_Signed_Inline.eml', $sample_messages), 'PGP Signed Inline message is in the list of sample mail messages.');
+    $this->assertTrue(in_array('Mailhandler_Comment.eml', $sample_messages), 'Sample comment message is in the list of sample mail messages.');
   }
 
 }

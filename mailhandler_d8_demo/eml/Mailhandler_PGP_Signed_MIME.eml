@@ -1,7 +1,7 @@
 Delivery-date: Fri, 08 Jul 2016 09:11:07 -0700
 To: receiver@example.com
 From: Demo User <demo@example.com>
-Subject: PGP Signed MIME Example
+Subject: [node][mailhandler] PGP Signed MIME Example
 Message-ID: <577FD097.80100@example.com>
 Date: Fri, 8 Jul 2016 18:11:03 +0200
 MIME-Version: 1.0
@@ -15,7 +15,7 @@ Content-Type: multipart/mixed; boundary="xLaFe6afiX5jAh4uoCAIArNfomLiNoVSr"
 From: Demo User <demo@example.com>
 To: receiver@example.com
 Message-ID: <577FD097.80100@example.com>
-Subject: PGP Signed MIME Example
+Subject: [node][mailhandler] PGP Signed MIME Example
 
 --xLaFe6afiX5jAh4uoCAIArNfomLiNoVSr
 Content-Type: text/plain; charset=utf-8
@@ -40,13 +40,13 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAABCAAGBQJXgLB0AAoJEHOWpO1fXu1WDE4IAJ/glq33zmCmpe+ChxkAEM9J
-uOIDGbYmi2kgW+QH3NJH69u5uAxBMTk70XPIjcjN+9s4SCUHA6ex7CE761nHpvHA
-yWpvjF1RMPwv86vYMeNJcAgU/p8HYYEKdJXSZNG4di2Dw0x+C6s7lvHgPoZl1gs/
-5+afzUHKb/Xkz27LjHcP74y5VQO+pAjLtNP8zUA3E+x3TUo9lMciZxTX/xbUDNBx
-EeLvQ0XKImPcVo1O8SkZ8Ix12W1q+jo7n6zNBuVsdvJo96lqW5RnF+yq2Hda9iy5
-9vvVCBBiqosxh8ItuFnjZGn0YWeIZafb8xlUyzJQ1nhg2hhlEnOcKXbk/xR3+z8=
-=IgUc
+iQEcBAABCAAGBQJXjgCAAAoJEHOWpO1fXu1W6s4H/iCB9SupjkfBvNmygJ4XNGBC
+bsNI7DW4gOHtyvgFhZ9RYgFJ9xpMK9Lt15vCCve7RU9l/6bIyuWOKHAk3GNqQVYO
+vhOP3y/JlpdEEguj8Ee28BQ3KQk9kGmcdrbRPe1S2muGxEP5BeinC0a1wSAJRYvY
+ywEbvnMworV1nVtWYVLGgAekaVWhkk5EdKjRz9xfdzy+9u0ivYic5/+NBoplt0ar
+z0Il9b5WHJC0k251wusVVivu2FofgWmLxtpWTDambW+WZhoc2ngw8evnsmYIQvb6
+ylfrFH7wh2QYntwo7IHvqy1B44qhcCWuL6U6cpF9H8EWneGUTCGS1xDJVguxYqA=
+=p6Jj
 -----END PGP SIGNATURE-----
 
 --I6wEJC0As1Fsmsk8w6BE3bBJ5krGelhSH--
