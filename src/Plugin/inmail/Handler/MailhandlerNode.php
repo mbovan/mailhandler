@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Handler(
  *   id = "mailhandler_node",
- *   label = @Translation("Node"),
+ *   label = @Translation("Content"),
  *   description = @Translation("Creates a node from a mail message.")
  * )
  */
