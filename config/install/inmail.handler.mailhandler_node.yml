@@ -1,6 +1,6 @@
 langcode: en
 id: mailhandler_node
-label: Node
+label: Create content
 plugin: mailhandler_node
 configuration:
   content_type: _mailhandler

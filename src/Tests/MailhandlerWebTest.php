@@ -49,7 +49,7 @@ class MailhandlerWebTest extends WebTestBase {
     $mailhandler_node_path = 'admin/config/system/inmail/handlers/mailhandler_node';
     // Configure a handler.
     $this->drupalGet($mailhandler_node_path);
-    $this->assertText(t('Node'));
+    $this->assertText(t('Create content'));
     $this->assertText('mailhandler_node');
     $this->assertFieldByName('content_type', '_mailhandler');
     $this->assertText(t('Detect (Mailhandler)'));
