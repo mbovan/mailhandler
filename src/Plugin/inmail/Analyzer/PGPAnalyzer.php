@@ -221,7 +221,6 @@ class PGPAnalyzer extends AnalyzerBase {
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'inline') {
       // Since the message was already checked for valid PGP signature, we
       // can use the analyzed result instead of the raw message body.
-      // See \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\MailhandlerAnalyzer::isSigned
       $pgp_parts = explode("-----BEGIN PGP SIGNATURE-----", $result->getContext('pgp')->getContextValue()['signed_text']);
       // Get the message digest by following RFC 4880 recommendations.
       // See https://tools.ietf.org/html/rfc4880#section-7.
