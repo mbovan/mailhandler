@@ -29,6 +29,7 @@ class BodyAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $body_analyzer = AnalyzerConfig::load('body');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\BodyAnalyzer $analyzer */

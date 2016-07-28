@@ -29,6 +29,7 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $footer_analyzer = AnalyzerConfig::load('footer');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
@@ -49,6 +50,7 @@ EOF;
     $signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     $message = $this->parser->parseMessage($signed_mail);
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);

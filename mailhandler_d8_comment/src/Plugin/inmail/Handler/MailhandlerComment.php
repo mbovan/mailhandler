@@ -102,7 +102,6 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   protected function createComment(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     $entity_id = $this->getEntityId($result);
 
-
     // Validate whether user is allowed to post comments.
     $user = $this->validateUser($result);
 
@@ -110,7 +109,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     $comment = Comment::create([
       'entity_type' => $this->configuration['entity_type'],
       'entity_id' => $entity_id,
-      'uid' => $user,
+      'uid' => $user->id(),
       'subject' => $result->getSubject(),
       'comment_body' => [
         'value' => $result->getBody(),
@@ -144,7 +143,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     }
 
     // Get the current user.
-    $user = \Drupal::currentUser();
+    $user = \Drupal::currentUser()->getAccount();
 
     // Authorize a user.
     $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $user, [], TRUE);

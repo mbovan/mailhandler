@@ -82,7 +82,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
       // Create a node.
       $node = $this->createNode($message, $result);
 
-      \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$result->getUser()->getDisplayName()}\".");
+      \Drupal::logger('mailhandler')->log(RfcLogLevel::NOTICE, "\"{$node->label()}\" has been created by \"{$result->getAccount()->getDisplayName()}\".");
     }
     catch (\Exception $e) {
       // Log error in case verification, authentication or authorization fails.
@@ -111,7 +111,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
         'value' => $result->getBody(),
         'format' => 'full_html',
       ],
-      'uid' => \Drupal::currentUser(),
+      'uid' => \Drupal::currentUser()->getAccount(),
       'title' => $result->getSubject(),
     ]);
     $node->save();

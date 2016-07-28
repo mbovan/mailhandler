@@ -30,6 +30,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $entity_type_analyzer = AnalyzerConfig::load('entity_type');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\EntityTypeAnalyzer $analyzer */
@@ -50,6 +51,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $page->save();
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
@@ -60,6 +62,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     /** @var \Drupal\inmail\MIME\MessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
     $this->assertEquals('user', $result->getContext('entity_type')->getContextValue()['entity_type']);

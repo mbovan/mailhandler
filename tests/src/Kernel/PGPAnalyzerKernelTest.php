@@ -52,6 +52,7 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $pgp_analyzer = AnalyzerConfig::load('pgp');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\PGPAnalyzer $analyzer */

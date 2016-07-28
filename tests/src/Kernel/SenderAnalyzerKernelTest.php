@@ -30,6 +30,7 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $sender_analyzer = AnalyzerConfig::load('sender');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\SenderAnalyzer $analyzer */
@@ -49,6 +50,7 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
