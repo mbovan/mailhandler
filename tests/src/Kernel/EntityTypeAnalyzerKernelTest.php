@@ -4,7 +4,7 @@ namespace Drupal\Tests\mailhandler_d8\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\node\Entity\NodeType;
 
 /**
@@ -35,15 +35,12 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\EntityTypeAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($entity_type_analyzer->getPluginId(), $entity_type_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-
-    $this->assertEquals('Google Summer of Code 2016', $mailhandler_result->getSubject());
-    $this->assertEquals('node', $mailhandler_result->getEntityType());
+    $this->assertEquals('Google Summer of Code 2016', $result->getSubject());
+    $this->assertEquals('node', $result->getContext('entity_type')->getContextValue()['entity_type']);
     // The node type "page" is not recognized in the system.
-    $this->assertEquals(NULL, $mailhandler_result->getBundle());
+    $this->assertEquals(NULL, $result->getContext('entity_type')->getContextValue()['bundle']);
 
     // Create "page" node type.
     $page = NodeType::create([
@@ -54,11 +51,9 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
 
     $result = new ProcessorResult();
     $analyzer->analyze($message, $result);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-    $this->assertEquals('page', $mailhandler_result->getBundle());
+    $this->assertEquals('page', $result->getContext('entity_type')->getContextValue()['bundle']);
 
     // Assert partial matching (entity type only) is handled properly.
     $raw_message = str_replace('[node][page]', '[user][#id]', $raw_message);
@@ -66,10 +61,10 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
     $result = new ProcessorResult();
     $analyzer->analyze($message, $result);
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-    $this->assertEquals('user', $mailhandler_result->getEntityType());
-    $this->assertEquals(NULL, $mailhandler_result->getBundle());
-    $this->assertEquals('[#id] Google Summer of Code 2016', $mailhandler_result->getSubject());
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $this->assertEquals('user', $result->getContext('entity_type')->getContextValue()['entity_type']);
+    $this->assertEquals(NULL, $result->getContext('entity_type')->getContextValue()['bundle']);
+    $this->assertEquals('[#id] Google Summer of Code 2016', $result->getSubject());
   }
 
 }

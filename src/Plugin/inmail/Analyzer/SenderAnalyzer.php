@@ -2,11 +2,11 @@
 
 namespace Drupal\mailhandler_d8\Plugin\inmail\Analyzer;
 
+use Drupal\inmail\DefaultAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 
 /**
  * Finds the sender based on "From" mail header field.
@@ -26,8 +26,7 @@ class SenderAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
-    $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
+    $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
     $this->findSender($message, $result);
   }
@@ -37,10 +36,10 @@ class SenderAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzed message result.
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   *   The analyzer result.
    */
-  protected function findSender(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+  protected function findSender(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     $sender = NULL;
     $user = NULL;
     $matches = [];
@@ -56,12 +55,12 @@ class SenderAnalyzer extends AnalyzerBase {
       $user = reset($matched_users);
     }
 
-    // Do not override a sender/user in case there is already one set.
+    // Do not override a sender/account in case there is already one set.
     if (!$result->getSender()) {
       $result->setSender($sender);
     }
     if ($user && !$result->isUserAuthenticated()) {
-      $result->setUser($user);
+      $result->setAccount($user);
     }
   }
 

@@ -7,11 +7,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\inmail\DefaultAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -68,9 +68,9 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
-      $result = $this->getMailhandlerResult($processor_result);
+      $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-      if ($result->getEntityType() != 'node') {
+      if (!$result->hasContext('entity_type') || $result->getContext('entity_type')->getContextValue()['entity_type'] != 'node') {
         // Do not run this handler in case
         // the identified entity type is not node.
         return;
@@ -91,37 +91,11 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   }
 
   /**
-   * Returns a Mailhandler analyzer result instance.
-   *
-   * @param \Drupal\inmail\ProcessorResultInterface $processor_result
-   *   The result and log container for the message, containing the message
-   *   deliverer and possibly analyzer results.
-   * @return \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface
-   *   The Mailhandler analyzer result instance.
-   *
-   * @throws \Exception
-   *   Throws an exception in case there is no Mailhandler analyzer result
-   *   object created. It happens in case all Mailhandler analyzers are
-   *   disabled.
-   */
-  public function getMailhandlerResult(ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
-    $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-
-    // @todo: Remove when support for core Inmail result objects is implemented.
-    if (!$result) {
-      throw new \Exception('Mailhandler Analyzer result object cannot be ensured.');
-    }
-
-    return $result;
-  }
-
-  /**
    * Creates a new node from given mail message.
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result.
    *
    * @return \Drupal\node\Entity\Node
@@ -130,14 +104,14 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a node.
    */
-  protected function createNode(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+  protected function createNode(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     $node = Node::create([
       'type' => $this->getContentType($result),
       'body' => [
         'value' => $result->getBody(),
         'format' => 'full_html',
       ],
-      'uid' => $result->getUser(),
+      'uid' => \Drupal::currentUser(),
       'title' => $result->getSubject(),
     ]);
     $node->save();
@@ -148,15 +122,15 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * Checks if the user is authenticated.
    *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result instance.
    *
    * @throws \Exception
    *   Throws an exception in case user is not authenticated.
    */
-  protected function authenticateUser(MailhandlerAnalyzerResultInterface $result) {
+  protected function authenticateUser(DefaultAnalyzerResultInterface $result) {
     // Do not allow "From" mail header authorization for PGP-signed messages.
-    if (!$result->isUserAuthenticated() || ($result->isSigned() && !$result->isVerified())) {
+    if (!$result->isUserAuthenticated() || ($result->hasContext('verified') && !$result->getContext('verified')->getContextValue())) {
       throw new \Exception('Failed to process the message. User is not authenticated.');
     }
   }
@@ -164,8 +138,8 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * Returns the content type.
    *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzer result instance.
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   *   The analyzer result.
    *
    * @return string
    *   The content type.
@@ -173,12 +147,12 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a node.
    */
-  protected function getContentType(MailhandlerAnalyzerResultInterface $result) {
+  protected function getContentType(DefaultAnalyzerResultInterface $result) {
     $content_type = $this->configuration['content_type'];
     $node = TRUE;
-    if ($content_type == '_mailhandler') {
-      $node = $result->getEntityType() == 'node' ? TRUE : FALSE;
-      $content_type = $result->getBundle();
+    if ($content_type == '_mailhandler' && $result->hasContext('entity_type')) {
+      $node = $result->getContext('entity_type')->getContextValue()['entity_type'] == 'node';
+      $content_type = $result->getContext('entity_type')->getContextValue()['bundle'];
     }
 
     if (!$content_type || !$node) {
@@ -186,7 +160,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
     }
 
     // Authorize a user.
-    $access = $this->entityTypeManager->getAccessControlHandler('node')->createAccess($content_type, $result->getUser(), [], TRUE);
+    $access = $this->entityTypeManager->getAccessControlHandler('node')->createAccess($content_type, $result->getAccount(), [], TRUE);
     if (!$access->isAllowed()) {
       throw new \Exception('Failed to process the message. User is not authorized to create a node of type "' . $content_type . '".');
     }

@@ -4,7 +4,7 @@ namespace Drupal\Tests\mailhandler_d8\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 
@@ -57,17 +57,14 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\PGPAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($pgp_analyzer->getPluginId(), $pgp_analyzer->getConfiguration());
     $analyzer->analyze($signed_mail, $result);
-
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
     // @todo: Remove if condition after enabling GnuGP extension in tests.
     if (extension_loaded('gnupg')) {
-      $this->assertEquals($signed_mail->getSubject(), $mailhandler_result->getSubject());
-      $this->assertEquals('Hello world!', $mailhandler_result->getBody());
-      $this->assertEquals($user, $mailhandler_result->getUser());
-      $this->assertEquals('inline', $mailhandler_result->getPgpType());
+      $this->assertEquals($signed_mail->getSubject(), $result->getSubject());
+      $this->assertEquals('Hello world!', $result->getBody());
+      $this->assertEquals($user, $result->getAccount());
+      $this->assertEquals('inline', $result->getContext('pgp')->getContextValue()['pgp_type']);
     }
   }
 

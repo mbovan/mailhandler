@@ -2,11 +2,11 @@
 
 namespace Drupal\mailhandler_d8\Plugin\inmail\Analyzer;
 
+use Drupal\inmail\DefaultAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 
 /**
  * A message body analyzer.
@@ -24,8 +24,7 @@ class BodyAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
-    $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
+    $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
     $this->analyzeBody($message, $result);
   }
@@ -35,10 +34,10 @@ class BodyAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   A mail message to be analyzed.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result.
    */
-  protected function analyzeBody(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+  protected function analyzeBody(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     // Use message processed body if available.
     $body = $result->getBody() ?: $message->getBody();
 

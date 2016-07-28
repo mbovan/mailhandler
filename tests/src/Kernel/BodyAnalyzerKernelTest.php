@@ -4,7 +4,7 @@ namespace Drupal\Tests\mailhandler_d8\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResult;
 
 /**
  * Tests the Body Analyzer plugin.
@@ -35,10 +35,7 @@ class BodyAnalyzerKernelTest extends AnalyzerTestBase {
     $analyzer = $this->analyzerManager->createInstance($body_analyzer->getPluginId(), $body_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
 
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
     $expected_processed_body = <<<EOF
 Hello, Drupal!<br />
 <br />
@@ -48,7 +45,7 @@ milos@example.com
 EOF;
 
     // New lines are replaced with <br /> HTML tag.
-    $this->assertEquals($expected_processed_body, $mailhandler_result->getBody());
+    $this->assertEquals($expected_processed_body, $result->getBody());
   }
 
 }

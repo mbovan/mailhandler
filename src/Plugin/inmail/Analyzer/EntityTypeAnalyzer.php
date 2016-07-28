@@ -2,11 +2,13 @@
 
 namespace Drupal\mailhandler_d8\Plugin\inmail\Analyzer;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+use Drupal\inmail\DefaultAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
 
 /**
  * An entity type and bundle analyzer.
@@ -24,8 +26,7 @@ class EntityTypeAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResult $result */
-    $result = $processor_result->ensureAnalyzerResult(MailhandlerAnalyzerResult::TOPIC, MailhandlerAnalyzerResult::createFactory());
+    $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
     $this->findEntityType($message, $result);
   }
@@ -35,10 +36,10 @@ class EntityTypeAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzed message result.
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   *   The analyzed result.
    */
-  protected function findEntityType(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+  protected function findEntityType(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     $subject = $result->getSubject() ?: $message->getSubject();
     $entity_type = NULL;
     $bundle = NULL;
@@ -54,8 +55,15 @@ class EntityTypeAnalyzer extends AnalyzerBase {
       }
     }
 
-    $result->setEntityType($entity_type);
-    $result->setBundle($bundle);
+    // Add entity type context.
+    $context_data = [
+      'entity_type' => $entity_type,
+      'bundle' => $bundle,
+    ];
+    $context_definition = new ContextDefinition('any', $this->t('Entity type context'));
+    $context = new Context($context_definition, $context_data);
+    $result->addContext('entity_type', $context);
+
     $result->setSubject($subject);
   }
 
