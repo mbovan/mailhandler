@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\mailhandler_d8\Kernel;
 
+use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 
