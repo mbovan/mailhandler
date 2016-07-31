@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\mailhandler_d8\Kernel;
 
+use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 use Drupal\user\Entity\User;
 
 /**
@@ -30,19 +30,17 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $sender_analyzer = AnalyzerConfig::load('sender');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\SenderAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($sender_analyzer->getPluginId(), $sender_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-
-    $this->assertEquals('milos@example.com', $mailhandler_result->getSender());
-    $this->assertFalse($mailhandler_result->isUserAuthenticated());
-    $this->assertNull($mailhandler_result->getUser());
+    $this->assertEquals('milos@example.com', $result->getSender());
+    $this->assertFalse($result->isUserAuthenticated());
+    $this->assertNull($result->getAccount());
 
     // Add a new user.
     $user = User::create([
@@ -52,13 +50,13 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-    $this->assertEquals('milos@example.com', $mailhandler_result->getSender());
-    $this->assertTrue($mailhandler_result->isUserAuthenticated());
-    $this->assertEquals($user->id(), $mailhandler_result->getUser()->id());
+    $this->assertEquals('milos@example.com', $result->getSender());
+    $this->assertTrue($result->isUserAuthenticated());
+    $this->assertEquals($user->id(), $result->getAccount()->id());
   }
 
 }

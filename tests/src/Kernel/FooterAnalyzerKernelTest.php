@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\mailhandler_d8\Kernel;
 
+use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\ProcessorResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
 
 /**
  * Tests the Footer Analyzer plugin.
@@ -29,15 +29,13 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $footer_analyzer = AnalyzerConfig::load('footer');
 
     /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-
-    // Mailhandler analyzer result.
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
     $expected_processed_body = 'Hello, Drupal!';
     $expected_footer = <<<EOF
@@ -45,20 +43,20 @@ Milos Bovan
 milos@example.com
 EOF;
 
-    $this->assertEquals($expected_processed_body, $mailhandler_result->getBody());
-    $this->assertEquals($expected_footer, $mailhandler_result->getFooter());
+    $this->assertEquals($expected_processed_body, $result->getBody());
+    $this->assertEquals($expected_footer, $result->getFooter());
 
     // Assert footer is not processed for signed messages.
     $signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     $message = $this->parser->parseMessage($signed_mail);
     $result = new ProcessorResult();
+    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $mailhandler_result */
-    $mailhandler_result = $result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-    $this->assertEquals(NULL, $mailhandler_result->getBody());
-    $this->assertEquals(NULL, $mailhandler_result->getFooter());
+    $this->assertEquals(NULL, $result->getBody());
+    $this->assertEquals(NULL, $result->getFooter());
   }
 
 }

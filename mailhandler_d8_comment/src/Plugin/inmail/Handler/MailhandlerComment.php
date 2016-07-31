@@ -4,16 +4,14 @@ namespace Drupal\mailhandler_d8_comment\Plugin\inmail\Handler;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
-use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\inmail\DefaultAnalyzerResult;
+use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResult;
-use Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -69,9 +67,9 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
-      $result = $this->getMailhandlerResult($processor_result);
+      $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
 
-      if ($result->getEntityType() != 'comment') {
+      if (!$result->hasContext('entity_type') || $result->getContext('entity_type')->getContextValue()['entity_type'] != 'comment') {
         // Do not run this handler in case we are not dealing with comments.
         return;
       }
@@ -88,37 +86,11 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   }
 
   /**
-   * Returns a Mailhandler analyzer result instance.
-   *
-   * @param \Drupal\inmail\ProcessorResultInterface $processor_result
-   *   The result and log container for the message, containing the message
-   *   deliverer and possibly analyzer results.
-   * @return \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface
-   *   The Mailhandler analyzer result instance.
-   *
-   * @throws \Exception
-   *   Throws an exception in case there is no Mailhandler analyzer result
-   *   object created. It happens in case all Mailhandler analyzers are
-   *   disabled.
-   */
-  public function getMailhandlerResult(ProcessorResultInterface $processor_result) {
-    /** @var \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result */
-    $result = $processor_result->getAnalyzerResult(MailhandlerAnalyzerResult::TOPIC);
-
-    // @todo: Remove when support for core Inmail result objects is implemented.
-    if (!$result) {
-      throw new \Exception('Mailhandler Analyzer result object cannot be ensured.');
-    }
-
-    return $result;
-  }
-
-  /**
    * Creates a new comment from given mail message.
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result.
    *
    * @return \Drupal\comment\Entity\Comment
@@ -127,9 +99,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a comment.
    */
-  protected function createComment(MessageInterface $message, MailhandlerAnalyzerResultInterface $result) {
+  protected function createComment(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
     $entity_id = $this->getEntityId($result);
-
 
     // Validate whether user is allowed to post comments.
     $user = $this->validateUser($result);
@@ -138,7 +109,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     $comment = Comment::create([
       'entity_type' => $this->configuration['entity_type'],
       'entity_id' => $entity_id,
-      'uid' => $user,
+      'uid' => $user->id(),
       'subject' => $result->getSubject(),
       'comment_body' => [
         'value' => $result->getBody(),
@@ -156,8 +127,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * Checks if the user is authenticated and authorized to post comments.
    *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analyzer result instance.
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   *   The analyzer result.
    *
    * @return \Drupal\user\UserInterface
    *   The identified user.
@@ -165,15 +136,14 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception
    *   Throws an exception in case user is not validated.
    */
-  protected function validateUser(MailhandlerAnalyzerResultInterface $result) {
+  protected function validateUser(DefaultAnalyzerResultInterface $result) {
     // Do not allow unverified PGP-signed messages.
-    if ($result->isSigned() && !$result->isVerified()) {
+    if ($result->hasContext('verified') && !$result->getContext('verified')->getContextValue()) {
       throw new \Exception('Failed to process the message. PGP-signed message is not verified.');
     }
 
-    // Get the user or fallback to anonymous user.
-    // @todo: Replace with current user after https://www.drupal.org/node/2754261.
-    $user = $result->isUserAuthenticated() ? $result->getUser() : User::getAnonymousUser();
+    // Get the current user.
+    $user = \Drupal::currentUser()->getAccount();
 
     // Authorize a user.
     $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $user, [], TRUE);
@@ -239,8 +209,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * Returns a referenced entity ID.
    *
-   * @param \Drupal\mailhandler_d8\MailhandlerAnalyzerResultInterface $result
-   *   The analzer result instance.
+   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   *   The analyzer result.
    *
    * @return string
    *   The entity ID.
@@ -248,7 +218,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception.
    *   Throws an exception in case entity ID is not valid.
    */
-  protected function getEntityId(MailhandlerAnalyzerResultInterface $result) {
+  protected function getEntityId(DefaultAnalyzerResultInterface $result) {
     $subject = $result->getSubject();
     if (!preg_match('/^\[#(\d+)\]\s+/', $subject, $matches)) {
       throw new \Exception('Referenced entity ID of the comment could not be identified.');
