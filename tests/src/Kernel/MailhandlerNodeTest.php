@@ -87,8 +87,6 @@ class MailhandlerNodeTest extends KernelTestBase {
    */
   public function testMailhandlerNodePlugin() {
     $raw_node_mail = $this->getFileContent('eml/Plain.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $node_mail */
-    $node_mail = $this->parser->parseMessage($raw_node_mail);
 
     // Assert default handler configuration.
     /** @var \Drupal\inmail\Entity\HandlerConfig $handler_config */
