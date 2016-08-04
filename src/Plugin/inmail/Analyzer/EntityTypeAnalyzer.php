@@ -15,6 +15,17 @@ use Drupal\inmail\ProcessorResultInterface;
  *
  * @ingroup analyzer
  *
+ * Entity type analyzer parses the message subject in order to extract entity
+ * type and bundle information.
+ *
+ * Mail messages intended for Mailhandler processing have
+ * "[{entity_type}][{bundle}]" pattern at the beginning of it.
+ *
+ * This analyzer uses regular expressions and partial matching to extract those
+ * data.Both parameters are validated before they are attached to "entity_type"
+ * context. In case of a match (entity type and/or bundle is/are detected),
+ * those parameters are removed from the processed subject.
+ *
  * @Analyzer(
  *   id = "entity_type",
  *   label = @Translation("Entity type and bundle Analyzer")
@@ -32,7 +43,7 @@ class EntityTypeAnalyzer extends AnalyzerBase {
   }
 
   /**
-   * Analyzes the message subject.
+   * Analyzes the message subject to extract entity type and bundle information.
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
@@ -62,21 +73,21 @@ class EntityTypeAnalyzer extends AnalyzerBase {
     ];
     $context_definition = new ContextDefinition('any', $this->t('Entity type context'));
     $context = new Context($context_definition, $context_data);
-    $result->addContext('entity_type', $context);
+    $result->setContext('entity_type', $context);
 
     $result->setSubject($subject);
   }
 
   /**
-   * Returns the extracted bundle or null if it is not valid.
+   * Returns the extracted bundle name.
    *
    * @param string $entity_type
-   *   The extracted entity type.
+   *   The extracted entity type name.
    * @param string $bundle
-   *   The extracted bundle.
+   *   The extracted bundle name.
    *
    * @return string|null
-   *   The bundle or null.
+   *   The bundle name or null if not valid.
    */
   protected function getBundle($entity_type, $bundle) {
     if (\Drupal::entityTypeManager()->getDefinition($entity_type, FALSE)->hasKey('bundle')) {
