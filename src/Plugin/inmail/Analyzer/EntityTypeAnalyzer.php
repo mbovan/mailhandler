@@ -22,7 +22,7 @@ use Drupal\inmail\ProcessorResultInterface;
  * "[{entity_type}][{bundle}]" pattern at the beginning of it.
  *
  * This analyzer uses regular expressions and partial matching to extract those
- * data.Both parameters are validated before they are attached to "entity_type"
+ * data. Both parameters are validated before they are attached to "entity_type"
  * context. In case of a match (entity type and/or bundle is/are detected),
  * those parameters are removed from the processed subject.
  *
