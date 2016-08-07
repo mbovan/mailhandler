@@ -22,7 +22,8 @@ use Drupal\inmail\ProcessorResultInterface;
  * Two types of signed messages are supported: Cleartext (inline) and PGP/MIME
  * signed messages.
  * In case the message is identified as a PGP-signed message, the signature is
- * verified using gnu_pg PHP extension.
+ * verified using gnu_pg PHP extension. This analyzer also updates the account
+ * (sender) and processed body.
  *
  * @Analyzer(
  *   id = "pgp",
