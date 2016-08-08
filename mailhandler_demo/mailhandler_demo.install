@@ -14,7 +14,7 @@ use Drupal\user\Entity\User;
 /**
  * Implements hook_install().
  */
-function mailhandler_d8_demo_install() {
+function mailhandler_demo_install() {
   // Create "mailhandler" content type.
   if (!$mailhandler_node_type = NodeType::load('mailhandler')) {
     $mailhandler_node_type = NodeType::create([
@@ -62,7 +62,7 @@ function mailhandler_d8_demo_install() {
     ])->save();
 
   // Get a demo public key.
-  $path = drupal_get_path('module', 'mailhandler_d8_demo') . '/keys/public.key';
+  $path = drupal_get_path('module', 'mailhandler_demo') . '/keys/public.key';
   $public_key = file_get_contents(DRUPAL_ROOT . '/' . $path);
 
   $entity_manager = \Drupal::entityManager();

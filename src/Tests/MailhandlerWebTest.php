@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Tests;
+namespace Drupal\mailhandler\Tests;
 
 use Drupal\simpletest\WebTestBase;
 
 /**
  * Tests the UI of Mailhandler.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class MailhandlerWebTest extends WebTestBase {
 
@@ -17,7 +17,7 @@ class MailhandlerWebTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8',
+    'mailhandler',
     'block',
     'field_ui',
   ];
@@ -98,7 +98,7 @@ class MailhandlerWebTest extends WebTestBase {
     $this->assertText(t('GPG Key field is used by Mailhandler to authenticate a user.'));
 
     // Add GPG public key to the user.
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/keys/public.key';
+    $path = drupal_get_path('module', 'mailhandler') . '/tests/keys/public.key';
     $key = file_get_contents(DRUPAL_ROOT . '/' . $path);
     $edit = [
       'mailhandler_gpg_key[0][public_key]' => $key,

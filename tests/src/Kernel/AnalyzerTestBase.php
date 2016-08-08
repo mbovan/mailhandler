@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 
@@ -15,7 +15,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8',
+    'mailhandler',
     'inmail',
     'system',
     'node',
@@ -43,7 +43,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
     $this->installEntitySchema('user');
-    $this->installConfig(['inmail', 'mailhandler_d8', 'user']);
+    $this->installConfig(['inmail', 'mailhandler', 'user']);
     $this->installSchema('system', ['sequences']);
 
     $this->parser = \Drupal::service('inmail.mime_parser');
@@ -60,7 +60,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 

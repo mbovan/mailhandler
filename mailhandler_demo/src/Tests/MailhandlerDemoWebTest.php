@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\mailhandler_d8_demo\Tests;
+namespace Drupal\mailhandler_demo\Tests;
 
 use Drupal\simpletest\WebTestBase;
 
 /**
  * Tests the UI of Mailhandler Demo.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class MailhandlerDemoWebTest extends WebTestBase {
 
@@ -17,7 +17,7 @@ class MailhandlerDemoWebTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8_demo',
+    'mailhandler_demo',
   ];
 
   /**

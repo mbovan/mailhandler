@@ -4,7 +4,7 @@ dependencies:
   config:
     - field.storage.user.mailhandler_gpg_key
   module:
-    - mailhandler_d8
+    - mailhandler
     - user
 id: user.user.mailhandler_gpg_key
 field_name: mailhandler_gpg_key

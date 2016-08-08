@@ -2,14 +2,14 @@ langcode: en
 status: true
 dependencies:
   module:
-    - mailhandler_d8
+    - mailhandler
     - user
 id: user.mailhandler_gpg_key
 field_name: mailhandler_gpg_key
 entity_type: user
 type: mailhandler_gpg
 settings: {  }
-module: mailhandler_d8
+module: mailhandler
 locked: false
 cardinality: 1
 translatable: true

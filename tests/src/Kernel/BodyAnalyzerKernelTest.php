@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
@@ -9,7 +9,7 @@ use Drupal\inmail\ProcessorResult;
 /**
  * Tests the Body Analyzer plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class BodyAnalyzerKernelTest extends AnalyzerTestBase {
 
@@ -32,7 +32,7 @@ class BodyAnalyzerKernelTest extends AnalyzerTestBase {
     $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $body_analyzer = AnalyzerConfig::load('body');
 
-    /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\BodyAnalyzer $analyzer */
+    /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\BodyAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($body_analyzer->getPluginId(), $body_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
 

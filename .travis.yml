@@ -29,8 +29,8 @@ env:
     - PATH="$PATH:$HOME/.composer/vendor/bin"
 
     # Configuration variables.
-    - DRUPAL_TI_MODULE_NAME="mailhandler_d8"
-    - DRUPAL_TI_SIMPLETEST_GROUP="mailhandler_d8"
+    - DRUPAL_TI_MODULE_NAME="mailhandler"
+    - DRUPAL_TI_SIMPLETEST_GROUP="mailhandler"
 
     # Define runners and environment vars to include before and after the
     # main runners / environment vars.

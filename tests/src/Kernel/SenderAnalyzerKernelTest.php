@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
@@ -10,7 +10,7 @@ use Drupal\user\Entity\User;
 /**
  * Tests the Sender Analyzer plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class SenderAnalyzerKernelTest extends AnalyzerTestBase {
 
@@ -33,7 +33,7 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $sender_analyzer = AnalyzerConfig::load('sender');
 
-    /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\SenderAnalyzer $analyzer */
+    /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\SenderAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($sender_analyzer->getPluginId(), $sender_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);

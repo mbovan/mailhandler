@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Plugin\Field\FieldWidget;
+namespace Drupal\mailhandler\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;

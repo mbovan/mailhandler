@@ -1,5 +1,5 @@
 {
-  "name": "drupal/mailhandler_d8",
+  "name": "drupal/mailhandler",
   "description": "Mailhandler allows you to create nodes and comments by sending an email.",
   "type": "drupal-module",
   "homepage": "https://www.drupal.org/sandbox/mbovan/2731473",

@@ -8,10 +8,10 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function mailhandler_d8_demo_form_inmail_demo_paste_alter(&$form, FormStateInterface $form_state) {
+function mailhandler_demo_form_inmail_demo_paste_alter(&$form, FormStateInterface $form_state) {
   $inmail_demo_examples = $form['example']['#options'];
 
-  $directory = drupal_get_path('module', 'mailhandler_d8_demo') . '/eml/';
+  $directory = drupal_get_path('module', 'mailhandler_demo') . '/eml/';
   $examples = array_keys(file_scan_directory($directory, '/.*/'));
   $mailhandler_demo_examples = array_map('basename', array_combine($examples, $examples));
 

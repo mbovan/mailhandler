@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Plugin\Field\FieldType;
+namespace Drupal\mailhandler\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -12,7 +12,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "mailhandler_gpg",
  *   label = @Translation("GPG Key"),
- *   module = "mailhandler_d8",
+ *   module = "mailhandler",
  *   description = @Translation("Represents a GPG Key field."),
  *   default_widget = "mailhandler_gpg",
  *   default_formatter = "mailhandler_gpg"

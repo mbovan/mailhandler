@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8_comment\Tests;
+namespace Drupal\mailhandler_comment\Tests;
 
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\node\Entity\NodeType;
@@ -9,7 +9,7 @@ use Drupal\simpletest\WebTestBase;
 /**
  * Tests the UI of Mailhandler Comment.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class MailhandlerCommentWebTest extends WebTestBase {
 
@@ -21,7 +21,7 @@ class MailhandlerCommentWebTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8_comment',
+    'mailhandler_comment',
     'block',
     'field_ui',
   ];

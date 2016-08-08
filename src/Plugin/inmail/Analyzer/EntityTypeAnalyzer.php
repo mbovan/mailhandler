@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Plugin\inmail\Analyzer;
+namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\inmail\Entity\AnalyzerConfig;
 use Drupal\inmail\Entity\DelivererConfig;
@@ -13,7 +13,7 @@ use Drupal\user\Entity\User;
 /**
  * Tests the Node handler plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class MailhandlerNodeTest extends KernelTestBase {
 
@@ -23,7 +23,7 @@ class MailhandlerNodeTest extends KernelTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8',
+    'mailhandler',
     'inmail',
     'system',
     'node',
@@ -41,7 +41,7 @@ class MailhandlerNodeTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installEntitySchema('inmail_handler');
     $this->installSchema('system', ['sequences']);
-    $this->installConfig(['inmail', 'mailhandler_d8', 'node', 'user']);
+    $this->installConfig(['inmail', 'mailhandler', 'node', 'user']);
 
     // Create a sample node type.
     $this->contentType1 = NodeType::create([
@@ -178,7 +178,7 @@ class MailhandlerNodeTest extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8') . '/tests/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 

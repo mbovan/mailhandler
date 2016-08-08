@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mailhandler_d8\Plugin\inmail\Analyzer;
+namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 
 use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\DefaultAnalyzerResultInterface;

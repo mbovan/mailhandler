@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
@@ -9,7 +9,7 @@ use Drupal\inmail\ProcessorResult;
 /**
  * Tests the Footer Analyzer plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class FooterAnalyzerKernelTest extends AnalyzerTestBase {
 
@@ -32,7 +32,7 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $footer_analyzer = AnalyzerConfig::load('footer');
 
-    /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
+    /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8\Kernel;
+namespace Drupal\Tests\mailhandler\Kernel;
 
 use Drupal\inmail\DefaultAnalyzerResult;
 use Drupal\inmail\Entity\AnalyzerConfig;
@@ -10,7 +10,7 @@ use Drupal\node\Entity\NodeType;
 /**
  * Tests the Entity Type Analyzer plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
 
@@ -33,7 +33,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $entity_type_analyzer = AnalyzerConfig::load('entity_type');
 
-    /** @var \Drupal\mailhandler_d8\Plugin\inmail\Analyzer\EntityTypeAnalyzer $analyzer */
+    /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\EntityTypeAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($entity_type_analyzer->getPluginId(), $entity_type_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
     $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);

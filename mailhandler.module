@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function mailhandler_d8_user_presave(EntityInterface $entity) {
+function mailhandler_user_presave(EntityInterface $entity) {
   /** @var \Drupal\user\UserInterface $entity */
   if ($entity->hasField('mailhandler_gpg_key') && extension_loaded('gnupg')) {
     /** @var \Drupal\user\UserInterface|null $original */

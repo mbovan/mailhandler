@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mailhandler_d8_comment\Kernel;
+namespace Drupal\Tests\mailhandler_comment\Kernel;
 
 use Drupal\comment\CommentInterface;
 use Drupal\comment\Entity\Comment;
@@ -18,7 +18,7 @@ use Drupal\user\RoleInterface;
 /**
  * Tests the Comment handler plugin.
  *
- * @group mailhandler_d8
+ * @group mailhandler
  */
 class MailhandlerCommentTest extends KernelTestBase {
 
@@ -30,8 +30,8 @@ class MailhandlerCommentTest extends KernelTestBase {
    * @var array
    */
   public static $modules = [
-    'mailhandler_d8',
-    'mailhandler_d8_comment',
+    'mailhandler',
+    'mailhandler_comment',
     'inmail',
     'comment',
     'system',
@@ -52,7 +52,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     $this->installEntitySchema('inmail_handler');
     $this->installSchema('comment', ['comment_entity_statistics']);
     $this->installSchema('system', ['sequences']);
-    $this->installConfig(['inmail', 'mailhandler_d8', 'mailhandler_d8_comment', 'node', 'user', 'comment']);
+    $this->installConfig(['inmail', 'mailhandler', 'mailhandler_comment', 'node', 'user', 'comment']);
 
     // Create a sample node type.
     $this->blog = NodeType::create([
@@ -171,7 +171,7 @@ class MailhandlerCommentTest extends KernelTestBase {
    *   The content of the file.
    */
   public function getFileContent($filename) {
-    $path = drupal_get_path('module', 'mailhandler_d8_comment') . '/tests/' . $filename;
+    $path = drupal_get_path('module', 'mailhandler_comment') . '/tests/' . $filename;
     return file_get_contents(DRUPAL_ROOT . '/' . $path);
   }
 
