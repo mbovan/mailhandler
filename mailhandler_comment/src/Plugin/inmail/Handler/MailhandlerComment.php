@@ -130,8 +130,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result.
    *
-   * @return \Drupal\user\UserInterface
-   *   The identified user.
+   * @return \Drupal\Core\Session\AccountInterface
+   *   The identified account.
    *
    * @throws \Exception
    *   Throws an exception in case user is not validated.
@@ -143,15 +143,15 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     }
 
     // Get the current user.
-    $user = \Drupal::currentUser()->getAccount();
+    $account = \Drupal::currentUser()->getAccount();
 
     // Authorize a user.
-    $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $user, [], TRUE);
+    $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $account, [], TRUE);
     if (!$access->isAllowed()) {
       throw new \Exception('Failed to process the message. User is not authorized to post comments.');
     }
 
-    return $user;
+    return $account;
   }
 
   /**
