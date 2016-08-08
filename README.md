@@ -2,8 +2,8 @@
     <content>
 # Mailhandler
 
-[![Travis](https://img.shields.io/travis/fantastic91/mailhandler_d8.svg?maxAge=2592000)](https://travis-ci.org/fantastic91/mailhandler_d8/)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/fantastic91/mailhandler_d8.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https://github.com/fantastic91/mailhandler_d8)
+[![Travis](https://img.shields.io/travis/fantastic91/mailhandler.svg?maxAge=2592000)](https://travis-ci.org/fantastic91/mailhandler/)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/fantastic91/mailhandler.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https://github.com/fantastic91/mailhandler)
 
 Mailhandler is a [Drupal 8](https://www.drupal.org/8) module that allows you you to post nodes by email. It takes mail (usually from an IMAP mailbox) and imports it as whatever type of content you choose. Beside the preconfigured content type, Mailhandler allows you to specify the content type directy in your email subject. It allows you to select different authentication methods and mail analyzers. Mailhandler Comment module allows you to post comments. Hugely powerful and flexible, Mailhandler includes a demo module to help get you started.
 
