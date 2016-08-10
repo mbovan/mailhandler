@@ -17,14 +17,12 @@ use Drupal\inmail\ProcessorResultInterface;
  *
  * Entity type analyzer parses the message subject in order to extract entity
  * type and bundle information.
- *
  * Mail messages intended for Mailhandler processing have
- * "[{entity_type}][{bundle}]" pattern at the beginning of it.
- *
+ * "[{entity_type}][{bundle}]" pattern at the beginning of the subject.
  * This analyzer uses regular expressions and partial matching to extract those
  * data. Both parameters are validated before they are attached to "entity_type"
  * context. In case of a match (entity type and/or bundle is/are detected),
- * those parameters are removed from the processed subject.
+ * those parameters are removed from the analyzed subject.
  *
  * @Analyzer(
  *   id = "entity_type",

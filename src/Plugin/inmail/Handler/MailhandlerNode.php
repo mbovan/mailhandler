@@ -18,6 +18,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Message handler that creates a node from a mail message.
  *
+ * This handler authenticates and authorizes a user based on the analyzed
+ * result. In case user is validated, a new node is created.
+ *
  * @Handler(
  *   id = "mailhandler_node",
  *   label = @Translation("Content"),

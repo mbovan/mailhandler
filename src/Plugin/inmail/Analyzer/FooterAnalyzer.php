@@ -18,7 +18,7 @@ use Drupal\inmail\ProcessorResultInterface;
  *      separated by "-- \n".
  *    - "On {day}, {month} {date}, {year} at {hour}:{minute} {AM|PM}" is
  *      de-facto standard with Gmail.
- * In case there is a footer match on one of those patterns, footer and body
+ * If there is a footer match on one of these patterns, footer and body
  * properties are updated with new data.
  *
  * @Analyzer(

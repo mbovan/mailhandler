@@ -17,6 +17,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Message handler that supports posting comments via email.
  *
+ * This handler creates a new comment entity on the configured entity type if
+ * user (anonymous or authenticated user) has required permissions to create
+ * one.
+ *
  * @Handler(
  *   id = "mailhandler_comment",
  *   label = @Translation("Comment"),
