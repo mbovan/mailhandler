@@ -5,8 +5,11 @@
 [![Travis](https://img.shields.io/travis/fantastic91/mailhandler.svg?maxAge=2592000)](https://travis-ci.org/fantastic91/mailhandler/)
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/fantastic91/mailhandler.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https://github.com/fantastic91/mailhandler)
 
-[Mailhandler](http://drupal.org/project/mailhandler) is a [Drupal 8](https://www.drupal.org/8) module that allows you to post nodes by email.
-It is based on [Inmail](https://www.drupal.org/project/inmail) module and takes mail (usually from an IMAP mailbox) and imports it as whatever type of content you choose. Beside the configured content type, you can specify the content type directly in your email subject. It enables you to select different authentication methods and mail analyzers.
+[Mailhandler](http://drupal.org/project/mailhandler) is a [Drupal 8](https://www.drupal.org/8) module that allows you to post nodes by email. 
+
+It was developed as a part of [Google Summer of Code 2016](summerofcode.withgoogle.com/projects/#4520809229975552), following the [road map](https://www.drupal.org/node/2731519) and motivated by [Mailhandler for Drupal 7](https://www.drupal.org/project/mailhandler).
+
+The Drupal 8 version of the module is based on [Inmail](https://www.drupal.org/project/inmail) module and takes mail (usually from an IMAP mailbox) and imports it as whatever type of content you choose. Beside the configured content type, you can specify the content type directly in your email subject. It enables you to select different authentication methods and mail analyzers as well.
 
 Mailhandler Comment is a submodule that allows you to post comments by email.
 

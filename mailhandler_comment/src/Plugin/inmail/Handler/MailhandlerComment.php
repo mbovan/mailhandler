@@ -20,6 +20,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * This handler creates a new comment entity on the configured entity type if
  * user (anonymous or authenticated user) has required permissions to create
  * one.
+ * It is triggered in case the mail subject begins with "[comment][#entity_ID]"
+ * pattern.
  *
  * @Handler(
  *   id = "mailhandler_comment",
