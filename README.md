@@ -26,6 +26,12 @@ To use this module you will need to have:
 Take a look at the quick demo video that explains Mailhandler workflow:
 <a href="https://vimeo.com/175383067" target="_blank"><img src="https://i.vimeocdn.com/video/582471712.webp?mw=640&mh=360" alt="Mailhandler Demo" width="640" height="360" border="10" /></a>
 
+## How-To
+
+- What is the needed email format for Mailhandler?
+
+All emails parsed by Mailhandler need to have a subject that begins with "[node][{content_type}]" (for nodes) or "[comment][{#entity_ID}]" (for comments). The first parameters is the entity type ID while the second one is content type or entity ID. Both parameters are validated.
+
 ## Contributing
 
 The preferred way to contribute is to create an issue on the [project page](https://www.drupal.org/project/issues/mailhandler?version=8.x).
