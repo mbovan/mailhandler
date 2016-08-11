@@ -30,7 +30,7 @@ Take a look at the quick demo video that explains Mailhandler workflow:
 
 - What is the needed email format for Mailhandler?
 
-All emails parsed by Mailhandler need to have a subject that begins with "[node][{content_type}]" (for nodes) or "[comment][{#entity_ID}]" (for comments). The first parameters is the entity type ID while the second one is content type or entity ID. Both parameters are validated.
+All emails parsed by Mailhandler need to have a subject that begins with `[node][{content_type}]` (for nodes) or `[comment][{#entity_ID}]` (for comments). The first parameters is an entity type ID while the second one is a content type or an entity ID. Both parameters needs to be valid.
 
 ## Contributing
 
