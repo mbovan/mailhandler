@@ -37,7 +37,7 @@ All emails parsed by Mailhandler need to have a subject that begins with `[node]
 The preferred way to contribute is to create an issue on the [project page](https://www.drupal.org/project/issues/mailhandler?version=8.x).
 
 However, if you are more into Github contribution, you can submit a pull request too.
-- Fork it!
+- [Fork it!](https://github.com/fantastic91/mailhandler)
 - Create your feature branch: `git checkout -b my-new-feature`
 - Commit your changes: `git commit -am 'Add some feature'`
 - Push to the branch: `git push origin my-new-feature`
