@@ -11,7 +11,9 @@ use Drupal\inmail\ProcessorResultInterface;
 /**
  * Finds the sender based on "From" mail header field.
  *
- * As this option is not entirely safe, it is disabled by default.
+ * This analyzer extracts the email address from "From" mail header field and
+ * based on this information finds the corresponding user. As this option is not
+ * entirely safe, it is disabled by default.
  *
  * @ingroup analyzer
  *

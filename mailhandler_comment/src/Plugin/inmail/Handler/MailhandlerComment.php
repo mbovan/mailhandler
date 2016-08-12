@@ -17,6 +17,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Message handler that supports posting comments via email.
  *
+ * This handler creates a new comment entity on the configured entity type if
+ * user (anonymous or authenticated user) has required permissions to create
+ * one.
+ * It is triggered in case the mail subject begins with "[comment][#entity_ID]"
+ * pattern.
+ *
  * @Handler(
  *   id = "mailhandler_comment",
  *   label = @Translation("Comment"),
@@ -130,8 +136,8 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
    *   The analyzer result.
    *
-   * @return \Drupal\user\UserInterface
-   *   The identified user.
+   * @return \Drupal\Core\Session\AccountInterface
+   *   The identified account.
    *
    * @throws \Exception
    *   Throws an exception in case user is not validated.
@@ -143,15 +149,15 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
     }
 
     // Get the current user.
-    $user = \Drupal::currentUser()->getAccount();
+    $account = \Drupal::currentUser()->getAccount();
 
     // Authorize a user.
-    $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $user, [], TRUE);
+    $access = $this->entityTypeManager->getAccessControlHandler('comment')->createAccess('comment', $account, [], TRUE);
     if (!$access->isAllowed()) {
       throw new \Exception('Failed to process the message. User is not authorized to post comments.');
     }
 
-    return $user;
+    return $account;
   }
 
   /**

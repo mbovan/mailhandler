@@ -13,6 +13,12 @@ use Drupal\inmail\ProcessorResultInterface;
  *
  * @ingroup analyzer
  *
+ * This analyzer works with a message body processed by other analyzers in the
+ * queue or with a original message body in case there are no body-related
+ * analyzer. As of now, it is very primitive in its features. The only thing it
+ * does is trimming the white spaces before and after the message body. Also,
+ * in case of HTML body, this analyzer converts new lines to HTML <br /> tags.
+ *
  * @Analyzer(
  *   id = "body",
  *   label = @Translation("Body Analyzer")
@@ -30,7 +36,7 @@ class BodyAnalyzer extends AnalyzerBase {
   }
 
   /**
-   * Analyzes the message body.
+   * Analyzes the message body and updates it.
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   A mail message to be analyzed.
@@ -38,7 +44,7 @@ class BodyAnalyzer extends AnalyzerBase {
    *   The analyzer result.
    */
   protected function analyzeBody(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
-    // Use message processed body if available.
+    // Get the processed body if available. Otherwise, fallback to default one.
     $body = $result->getBody() ?: $message->getBody();
 
     // Remove the empty spaces from the beginning and from the end of message.

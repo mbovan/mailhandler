@@ -75,14 +75,13 @@ class MailhandlerWebTest extends WebTestBase {
 
     // Assert Mailhandler analyzers are displayed.
     $this->drupalGet('admin/config/system/inmail/analyzers');
-    $this->assertText(t('PGP-signed messages verification'));
-    $this->assertText(t('Extracts the entity type and bundle from the mail subject'));
+    $this->assertText(t('PGP signed messages verification'));
+    $this->assertText(t('Entity type and bundle identification from the mail subject'));
     $this->assertText(t('Message sender'));
     $this->assertText(t('Message footer'));
     $this->drupalGet('admin/config/system/inmail/analyzers/sender');
     $this->assertText('sender');
-    // @todo: Uncomment after https://www.drupal.org/node/2755057.
-    // $this->assertNoFieldChecked('edit-status');
+    $this->assertNoFieldChecked('edit-status');
 
     // Assert GPG key field.
     $edit = [

@@ -89,11 +89,41 @@ function mailhandler_demo_install() {
     'type' => $mailhandler_node_type->id(),
     'uid' => $demo_user->id(),
     'body' => [
-      'value' => '<p>' . t('Welcome to Mailhandler Demo module!') . '</p>'
-        . '<p>' . t('The demo module has added to present Mailhandler features.') . '</p>'
-        . '<iframe src="https://player.vimeo.com/video/175383067" width="640" height="366" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
-        . '<p><a href="https://vimeo.com/175383067">Drupal 8 module demo: Mailhandler</a> from <a href="https://vimeo.com/user54537495">Milos Bovan</a> on <a href="https://vimeo.com">Vimeo</a>.</p>',
-        // @todo: Improve demo content in https://www.drupal.org/node/2731539.
+      'value' => '<p><a href="http://drupal.org/project/mailhandler">Mailhandler</a> is a <a href="https://www.drupal.org/8">Drupal 8</a> module that allows you to post nodes by email.</p>' .
+                 '<p>It was developed as a part of <a href="https://summerofcode.withgoogle.com/projects/#4520809229975552">Google Summer of Code 2016</a>, following the <a href="https://www.drupal.org/node/2731519">road map</a> and motivated by <a href="https://www.drupal.org/project/mailhandler">Mailhandler for Drupal 7</a>.</p>' .
+                 '<p>The Drupal 8 version of the module is based on <a href="https://www.drupal.org/project/inmail">Inmail</a> module and takes mail (usually from an IMAP mailbox) and imports it as whatever type of content you choose. Beside the configured content type, you can specify the content type directly in your email subject. It enables you to select different authentication methods and mail analyzers as well.</p>' .
+                 '<p>Mailhandler Comment is a submodule that allows you to post comments by email.</p>' .
+                 '<p>Hugely powerful and flexible, Mailhandler includes a demo module to help you get started.</p>' .
+                 '<h1>Installation</h1>' .
+                 '<p>To use this module you will need to have:</p>' .
+                 '<ul>' .
+                 '<li>Installed <a href="https://www.drupal.org/project/drupal">Drupal 8 Core</a></li>' .
+                 '<li><a href="https://www.drupal.org/project/inmail">Inmail</a></li>' .
+                 '<li><a href="https://www.drupal.org/project/mailhandler">Mailhandler</a> (Make sure you choose 8.x version of the module)</li>' .
+                 '<li>Recommended: <a href="http://php.net/manual/en/gnupg.setup.php">GnuPG PHP extension</a> (Support for PGP-signed emails)</li>' .
+                 '</ul>' .
+                 '<p>Take a look at the quick demo video that explains Mailhandler workflow: </p>' .
+                 '<p><iframe allowfullscreen="" frameborder="0" height="366" mozallowfullscreen="" src="https://player.vimeo.com/video/175383067" webkitallowfullscreen="" width="640"></iframe></p>' .
+                 '<p><a href="https://vimeo.com/175383067">Drupal 8 module demo: Mailhandler</a> from <a href="https://vimeo.com/user54537495">Milos Bovan</a> on <a href="https://vimeo.com">Vimeo</a>.</p>' .
+                 '<h1>How-To</h1>' .
+                 '<ul>' .
+                 '<li>What is the needed email format for Mailhandler?</li>' .
+                 '</ul>' .
+                 '<p>All emails parsed by Mailhandler need to have a subject that begins with <code>[node][{content_type}]</code> (for nodes) or <code>[comment][{#entity_ID}]</code> (for comments). The first parameters is an entity type ID while the second one is a content type or an entity ID. Both parameters needs to be valid.</p>' .
+                 '<h1>Contributing</h1>' .
+                 '<p>The preferred way to contribute is to create an issue on the <a href="https://www.drupal.org/project/issues/mailhandler?version=8.x">project page</a>.</p>' .
+                 '<p>However, if you are more into Github contribution, you can submit a pull request too.</p>' .
+                 '<ul>' .
+                 '<li><a href="https://github.com/fantastic91/mailhandler">Fork it!</a></li>' .
+                 '<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>' .
+                 '<li>Commit your changes: <code>git commit -am \'Add some feature\'</code></li>' .
+                 '<li>Push to the branch: <code>git push origin my-new-feature</code></li>' .
+                 '<li>Submit a pull request</li>' .
+                 '</ul>' .
+                 '<h1>Credits</h1>' .
+                 '<p>This project has been developed as a part of <a href="https://summerofcode.withgoogle.com/projects/#4520809229975552">Google Summer of Code 2016</a> by <a href="https://www.drupal.org/u/mbovan">Miloš Bovan</a> and mentored by <a href="https://www.drupal.org/u/miro_dietiker">Miro Dietiker</a> and <a href="https://www.drupal.org/u/Primsi">Primož Hmeljak</a>.</p>' .
+                 '<h1>License</h1>' .
+                 '<p><a href="https://www.gnu.org/licenses/gpl-2.0.html">https://www.gnu.org/licenses/gpl-2.0.html</a></p>',
       'format' => 'full_html',
     ],
   ]);

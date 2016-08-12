@@ -18,6 +18,13 @@ use Drupal\inmail\ProcessorResultInterface;
  *
  * @ingroup analyzer
  *
+ * PGP (Pretty Good Analyzer) has a purpose to support PGP-signed mail messages.
+ * Two types of signed messages are supported: Cleartext (inline) and PGP/MIME
+ * signed messages.
+ * In case the message is identified as a PGP-signed message, the signature is
+ * verified using gnu_pg PHP extension. This analyzer also updates the account
+ * (sender) and processed body.
+ *
  * @Analyzer(
  *   id = "pgp",
  *   label = @Translation("Pretty Good Privacy Analyzer")
@@ -86,10 +93,7 @@ class PGPAnalyzer extends AnalyzerBase {
               'signed_text' => $signed_text_part->toString(),
               'signature' => $signature,
             ];
-            // @todo: Use setContext() after https://www.drupal.org/node/2770679.
-            if (!$result->hasContext('pgp')) {
-              $result->addContext('pgp', new Context($context_definition, $context_data));
-            }
+            $result->setContext('pgp', new Context($context_definition, $context_data));
 
             // Update the subject field.
             if ($signed_text_part->getHeader()->hasField('Subject')) {
@@ -119,10 +123,7 @@ class PGPAnalyzer extends AnalyzerBase {
             'signed_text' => $message_body,
             'signature' => FALSE,
           ];
-          // @todo: Use setContext() after https://www.drupal.org/node/2770679.
-          if (!$result->hasContext('pgp')) {
-            $result->addContext('pgp', new Context($context_definition, $context_data));
-          }
+          $result->setContext('pgp', new Context($context_definition, $context_data));
 
           return TRUE;
         }
@@ -174,10 +175,7 @@ class PGPAnalyzer extends AnalyzerBase {
     }
 
     // Set a message verification flag to the context.
-    // @todo: Update PGP context after https://www.drupal.org/node/2770679.
-    if (!$result->hasContext('verified')) {
-      $result->addContext('verified', new Context(new ContextDefinition('string'), TRUE));
-    }
+    $result->setContext('verified', new Context(new ContextDefinition('string'), TRUE));
   }
 
   /**

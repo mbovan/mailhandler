@@ -13,6 +13,14 @@ use Drupal\inmail\ProcessorResultInterface;
  *
  * @ingroup analyzer
  *
+ * Footer analyzer splits the message body on widely used footer patterns:
+ *    - Per https://tools.ietf.org/html/rfc3676#section-4.3, message footer is
+ *      separated by "-- \n".
+ *    - "On {day}, {month} {date}, {year} at {hour}:{minute} {AM|PM}" is
+ *      de-facto standard with Gmail.
+ * If there is a footer match on one of these patterns, footer and body
+ * properties are updated with new data.
+ *
  * @Analyzer(
  *   id = "footer",
  *   label = @Translation("Footer Analyzer")

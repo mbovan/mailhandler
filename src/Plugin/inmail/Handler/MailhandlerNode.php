@@ -18,6 +18,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Message handler that creates a node from a mail message.
  *
+ * To trigger this handler, the email subject needs to begin with
+ * "[node][{content_type}]" pattern. It will be parsed by Entity type analyzer
+ * and only if "node" entity type is identified this handler will execute.
+ * The content type (bundle) can be pre-configured in the handler configuration
+ * too.
+ * Later on, this handler will authenticat and authorize a user based on the
+ * analyzed result.
+ * In case all the conditions above are met, a new node is created.
+ *
  * @Handler(
  *   id = "mailhandler_node",
  *   label = @Translation("Content"),
