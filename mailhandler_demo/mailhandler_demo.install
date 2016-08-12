@@ -98,9 +98,9 @@ function mailhandler_demo_install() {
                  '<p>To use this module you will need to have:</p>' .
                  '<ul>' .
                  '<li>Installed <a href="https://www.drupal.org/project/drupal">Drupal 8 Core</a></li>' .
-	             '<li><a href="https://www.drupal.org/project/inmail">Inmail</a></li>' .
+                 '<li><a href="https://www.drupal.org/project/inmail">Inmail</a></li>' .
                  '<li><a href="https://www.drupal.org/project/mailhandler">Mailhandler</a> (Make sure you choose 8.x version of the module)</li>' .
-	             '<li>Recommended: <a href="http://php.net/manual/en/gnupg.setup.php">GnuPG PHP extension</a> (Support for PGP-signed emails)</li>' .
+                 '<li>Recommended: <a href="http://php.net/manual/en/gnupg.setup.php">GnuPG PHP extension</a> (Support for PGP-signed emails)</li>' .
                  '</ul>' .
                  '<p>Take a look at the quick demo video that explains Mailhandler workflow: </p>' .
                  '<p><iframe allowfullscreen="" frameborder="0" height="366" mozallowfullscreen="" src="https://player.vimeo.com/video/175383067" webkitallowfullscreen="" width="640"></iframe></p>' .
@@ -115,9 +115,9 @@ function mailhandler_demo_install() {
                  '<p>However, if you are more into Github contribution, you can submit a pull request too.</p>' .
                  '<ul>' .
                  '<li><a href="https://github.com/fantastic91/mailhandler">Fork it!</a></li>' .
-	             '<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>' .
+                 '<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>' .
                  '<li>Commit your changes: <code>git commit -am \'Add some feature\'</code></li>' .
-	             '<li>Push to the branch: <code>git push origin my-new-feature</code></li>' .
+                 '<li>Push to the branch: <code>git push origin my-new-feature</code></li>' .
                  '<li>Submit a pull request</li>' .
                  '</ul>' .
                  '<h1>Credits</h1>' .
