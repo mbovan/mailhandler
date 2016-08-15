@@ -8,7 +8,6 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
@@ -104,7 +103,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    *
    * @return \Drupal\node\Entity\Node
@@ -113,7 +112,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a node.
    */
-  protected function createNode(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
+  protected function createNode(MessageInterface $message, DefaultAnalyzerResult $result) {
     $node = Node::create([
       'type' => $this->getContentType($result),
       'body' => [
@@ -131,13 +130,13 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * Checks if the user is authenticated.
    *
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result instance.
    *
    * @throws \Exception
    *   Throws an exception in case user is not authenticated.
    */
-  protected function authenticateUser(DefaultAnalyzerResultInterface $result) {
+  protected function authenticateUser(DefaultAnalyzerResult $result) {
     // Do not allow "From" mail header authorization for PGP-signed messages.
     if (!$result->isUserAuthenticated() || ($result->hasContext('verified') && !$result->getContext('verified')->getContextValue())) {
       throw new \Exception('Failed to process the message. User is not authenticated.');
@@ -147,7 +146,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * Returns the content type.
    *
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    *
    * @return string
@@ -156,7 +155,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a node.
    */
-  protected function getContentType(DefaultAnalyzerResultInterface $result) {
+  protected function getContentType(DefaultAnalyzerResult $result) {
     $content_type = $this->configuration['content_type'];
     $node = TRUE;
     if ($content_type == '_mailhandler' && $result->hasContext('entity_type')) {

@@ -3,7 +3,6 @@
 namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
@@ -40,10 +39,10 @@ class BodyAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   A mail message to be analyzed.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    */
-  protected function analyzeBody(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
+  protected function analyzeBody(MessageInterface $message, DefaultAnalyzerResult $result) {
     // Get the processed body if available. Otherwise, fallback to default one.
     $body = $result->getBody() ?: $message->getBody();
 

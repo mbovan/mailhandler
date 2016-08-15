@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
@@ -96,7 +95,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    *
    * @return \Drupal\comment\Entity\Comment
@@ -105,7 +104,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a comment.
    */
-  protected function createComment(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
+  protected function createComment(MessageInterface $message, DefaultAnalyzerResult $result) {
     $entity_id = $this->getEntityId($result);
 
     // Validate whether user is allowed to post comments.
@@ -133,7 +132,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * Checks if the user is authenticated and authorized to post comments.
    *
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    *
    * @return \Drupal\Core\Session\AccountInterface
@@ -142,7 +141,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception
    *   Throws an exception in case user is not validated.
    */
-  protected function validateUser(DefaultAnalyzerResultInterface $result) {
+  protected function validateUser(DefaultAnalyzerResult $result) {
     // Do not allow unverified PGP-signed messages.
     if ($result->hasContext('verified') && !$result->getContext('verified')->getContextValue()) {
       throw new \Exception('Failed to process the message. PGP-signed message is not verified.');
@@ -215,7 +214,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * Returns a referenced entity ID.
    *
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    *
    * @return string
@@ -224,7 +223,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception.
    *   Throws an exception in case entity ID is not valid.
    */
-  protected function getEntityId(DefaultAnalyzerResultInterface $result) {
+  protected function getEntityId(DefaultAnalyzerResult $result) {
     $subject = $result->getSubject();
     if (!preg_match('/^\[#(\d+)\]\s+/', $subject, $matches)) {
       throw new \Exception('Referenced entity ID of the comment could not be identified.');
