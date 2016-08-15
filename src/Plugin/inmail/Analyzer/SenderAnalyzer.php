@@ -3,7 +3,6 @@
 namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
@@ -38,10 +37,10 @@ class SenderAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    */
-  protected function findSender(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
+  protected function findSender(MessageInterface $message, DefaultAnalyzerResult $result) {
     $sender = NULL;
     $user = NULL;
     $matches = [];

@@ -6,7 +6,6 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\MIME\MultipartEntity;
 use Drupal\inmail\MIME\MultipartMessage;
@@ -59,7 +58,7 @@ class PGPAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The message to check signature.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    * @param array $context
    *   An array to provide context data in case the message is signed.
@@ -67,7 +66,7 @@ class PGPAnalyzer extends AnalyzerBase {
    * @return bool
    *   TRUE if message is signed. Otherwise, FALSE.
    */
-  protected function isSigned(MessageInterface $message, DefaultAnalyzerResultInterface $result, array &$context) {
+  protected function isSigned(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     // Support PGP/MIME signed messages.
     if ($message instanceof MultipartMessage) {
       $parameters = $message->getContentType()['parameters'];
@@ -136,13 +135,13 @@ class PGPAnalyzer extends AnalyzerBase {
   /**
    * Verifies the PGP signature.
    *
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result instance containing PGP context.
    *
    * @throws \Exception
    *   Throws an exception in case verification fails.
    */
-  protected function verifySignature(DefaultAnalyzerResultInterface $result) {
+  protected function verifySignature(DefaultAnalyzerResult $result) {
     if (!extension_loaded('gnupg')) {
       throw new \Exception('PHP extension "gnupg" has to enabled to verify the signature.');
     }
@@ -183,7 +182,7 @@ class PGPAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    * @param array $context
    *   The array with context data.
@@ -191,7 +190,7 @@ class PGPAnalyzer extends AnalyzerBase {
    * @return string
    *   The analyzed message body.
    */
-  protected function findBody(MessageInterface $message, DefaultAnalyzerResultInterface $result, array &$context) {
+  protected function findBody(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     // By default, use original message body.
     $body = $message->getBody();
 
@@ -240,14 +239,14 @@ class PGPAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    * @param array $context
    *   The array with context data.
    * @throws \Exception
    *   Throws an exception if user is not authenticated.
    */
-  protected function findSender(MessageInterface $message, DefaultAnalyzerResultInterface $result, array &$context) {
+  protected function findSender(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     $sender = NULL;
     $user = NULL;
     $matches = [];

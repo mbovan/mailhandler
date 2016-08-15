@@ -5,7 +5,6 @@ namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\DefaultAnalyzerResultInterface;
 use Drupal\inmail\MIME\MessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
@@ -45,10 +44,10 @@ class EntityTypeAnalyzer extends AnalyzerBase {
    *
    * @param \Drupal\inmail\MIME\MessageInterface $message
    *   The mail message.
-   * @param \Drupal\inmail\DefaultAnalyzerResultInterface $result
+   * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzed result.
    */
-  protected function findEntityType(MessageInterface $message, DefaultAnalyzerResultInterface $result) {
+  protected function findEntityType(MessageInterface $message, DefaultAnalyzerResult $result) {
     $subject = $result->getSubject() ?: $message->getSubject();
     $entity_type = NULL;
     $bundle = NULL;
