@@ -24,7 +24,7 @@ To use this module you will need to have:
  - Recommended: [GnuPG PHP extension](http://php.net/manual/en/gnupg.setup.php) (Support for PGP-signed emails)
 
 Take a look at the quick demo video that explains Mailhandler workflow:
-<a href="https://vimeo.com/175383067" target="_blank"><img src="https://i.vimeocdn.com/video/582471712.webp?mw=640&mh=360" alt="Mailhandler Demo" width="640" height="360" border="10" /></a>
+[![Mailhandler Demo](https://i.vimeocdn.com/video/582471712.webp?mw=640&mh=360)](https://vimeo.com/175383067 "Mailhandler Demo")
 
 ## How-To
 
@@ -34,7 +34,7 @@ All emails parsed by Mailhandler need to have a subject that begins with `[node]
 
 ## Contributing
 
-The preferred way to contribute is to create an issue on the [project page](https://www.drupal.org/project/issues/mailhandler?version=8.x).
+You can help by reporting bugs, suggesting features, reviewing feature specifications or just by sharing your opinion. Use [Drupal.org issues](https://www.drupal.org/project/issues/mailhandler?version=8.x) for all that.
 
 However, if you are more into Github contribution, you can submit a pull request too.
 - [Fork it!](https://github.com/fantastic91/mailhandler)
