@@ -101,7 +101,7 @@ class MailhandlerNodeTest extends KernelTestBase {
     $sender_analyzer->enable()->save();
 
     // Process the mail.
-    $this->processor->process($raw_node_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_node_mail, $this->deliverer);
 
     // Assert there is a new node created.
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple();
@@ -119,7 +119,7 @@ class MailhandlerNodeTest extends KernelTestBase {
 
     // Change content type to "Detect (Mailhandler)".
     $handler_config->setConfiguration(['content_type' => '_mailhandler'])->save();
-    $this->processor->process($raw_node_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_node_mail, $this->deliverer);
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple();
     /** @var \Drupal\node\NodeInterface $node */
     $node = end($nodes);
@@ -147,7 +147,7 @@ class MailhandlerNodeTest extends KernelTestBase {
     $handler_config->setConfiguration(['content_type' => $this->contentType1->id()])->save();
 
     // Process the mail.
-    $this->processor->process($raw_signed_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_signed_mail, $this->deliverer);
 
     // Assert there is a new node created.
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple();
