@@ -109,7 +109,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     $this->assertEquals('node', $handler_config->getConfiguration()['entity_type']);
 
     // Process the mail.
-    $this->processor->process($raw_comment_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_comment_mail, $this->deliverer);
 
     // Since SenderAnalyzer is disabled by default, authenticated user will
     // fallback to an anonymous user.
@@ -122,7 +122,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['post comments']);
 
     // Trigger the processing again.
-    $this->processor->process($raw_comment_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_comment_mail, $this->deliverer);
     $comments = Comment::loadMultiple();
     $this->assertEquals(count($comments), 1, 'There is a new comment created.');
 
@@ -147,7 +147,7 @@ class MailhandlerCommentTest extends KernelTestBase {
     $sender_analyzer->enable()->save();
 
     // Trigger the processing.
-    $this->processor->process($raw_comment_mail, $this->deliverer);
+    $this->processor->process('test_key', $raw_comment_mail, $this->deliverer);
     $comments = Comment::loadMultiple();
     $this->assertEquals(count($comments), 1, 'There is a new comment created.');
 
