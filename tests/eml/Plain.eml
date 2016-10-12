@@ -2,6 +2,7 @@ MIME-Version: 1.0
 Date: Sat, 4 Jun 2016 10:32:22 +0200
 Delivered-To: receiver@example.com
 Message-ID: <CBLVQMgCq_wq2dTMqkbQw3fG-J9rLELkN-t_FYS6jveUjBoDt=w@mail.example.com>
+Received: from mail.example.com; Tue, 11 Oct 2016 15:32:55 +0200 (CEST)
 Subject: [node][page] Google Summer of Code 2016
 From: Milos Bovan <milos@example.com>
 To: receiver@example.com
