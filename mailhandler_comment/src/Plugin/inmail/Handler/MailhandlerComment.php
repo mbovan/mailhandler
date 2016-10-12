@@ -72,7 +72,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
-      $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+      $result = $processor_result->getAnalyzerResult();
 
       if (!$result->hasContext('entity_type') || $result->getContext('entity_type')->getContextValue()['entity_type'] != 'comment') {
         // Do not run this handler in case we are not dealing with comments.

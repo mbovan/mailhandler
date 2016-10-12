@@ -35,7 +35,7 @@ class PGPAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $processor_result->getAnalyzerResult();
 
     $context = [];
     // Check if we are dealing with PGP-signed message.

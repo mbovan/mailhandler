@@ -27,7 +27,7 @@ class SenderAnalyzer extends AnalyzerBase {
    * {@inheritdoc}
    */
   public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
-    $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $processor_result->getAnalyzerResult();
 
     $this->findSender($message, $result);
   }

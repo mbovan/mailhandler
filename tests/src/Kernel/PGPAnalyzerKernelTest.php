@@ -52,13 +52,12 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $pgp_analyzer = AnalyzerConfig::load('pgp');
 
     /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\PGPAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($pgp_analyzer->getPluginId(), $pgp_analyzer->getConfiguration());
     $analyzer->analyze($signed_mail, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     // @todo: Remove if condition after enabling GnuGP extension in tests.
     if (extension_loaded('gnupg')) {

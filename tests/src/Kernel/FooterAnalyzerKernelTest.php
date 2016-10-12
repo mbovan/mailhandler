@@ -29,13 +29,12 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $footer_analyzer = AnalyzerConfig::load('footer');
 
     /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\FooterAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $expected_processed_body = 'Hello, Drupal!';
     $expected_footer = <<<EOF
@@ -50,10 +49,9 @@ EOF;
     $signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
     $message = $this->parser->parseMessage($signed_mail);
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer = $this->analyzerManager->createInstance($footer_analyzer->getPluginId(), $footer_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $this->assertEquals(NULL, $result->getBody());
     $this->assertEquals(NULL, $result->getFooter());

@@ -30,13 +30,12 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $sender_analyzer = AnalyzerConfig::load('sender');
 
     /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\SenderAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($sender_analyzer->getPluginId(), $sender_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $this->assertEquals('milos@example.com', $result->getSender());
     $this->assertFalse($result->isUserAuthenticated());
@@ -50,9 +49,8 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
     $user->save();
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $this->assertEquals('milos@example.com', $result->getSender());
     $this->assertTrue($result->isUserAuthenticated());

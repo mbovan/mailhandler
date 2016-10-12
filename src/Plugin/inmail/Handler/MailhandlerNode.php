@@ -76,7 +76,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    */
   public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
-      $result = $processor_result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+      $result = $processor_result->getAnalyzerResult();
 
       if (!$result->hasContext('entity_type') || $result->getContext('entity_type')->getContextValue()['entity_type'] != 'node') {
         // Do not run this handler in case

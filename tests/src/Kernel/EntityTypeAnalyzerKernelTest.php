@@ -30,13 +30,12 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $entity_type_analyzer = AnalyzerConfig::load('entity_type');
 
     /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\EntityTypeAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($entity_type_analyzer->getPluginId(), $entity_type_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $this->assertEquals('Google Summer of Code 2016', $result->getSubject());
     $this->assertEquals('node', $result->getContext('entity_type')->getContextValue()['entity_type']);
@@ -51,9 +50,8 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     $page->save();
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
 
     $this->assertEquals('page', $result->getContext('entity_type')->getContextValue()['bundle']);
 
@@ -62,9 +60,8 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
     /** @var \Drupal\inmail\MIME\MessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $analyzer->analyze($message, $result);
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
     $this->assertEquals('user', $result->getContext('entity_type')->getContextValue()['entity_type']);
     $this->assertEquals(NULL, $result->getContext('entity_type')->getContextValue()['bundle']);
     $this->assertEquals('[#id] Google Summer of Code 2016', $result->getSubject());

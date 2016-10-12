@@ -29,14 +29,13 @@ class BodyAnalyzerKernelTest extends AnalyzerTestBase {
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
-    $result->ensureAnalyzerResult(DefaultAnalyzerResult::TOPIC, DefaultAnalyzerResult::createFactory());
     $body_analyzer = AnalyzerConfig::load('body');
 
     /** @var \Drupal\mailhandler\Plugin\inmail\Analyzer\BodyAnalyzer $analyzer */
     $analyzer = $this->analyzerManager->createInstance($body_analyzer->getPluginId(), $body_analyzer->getConfiguration());
     $analyzer->analyze($message, $result);
 
-    $result = $result->getAnalyzerResult(DefaultAnalyzerResult::TOPIC);
+    $result = $result->getAnalyzerResult();
     $expected_processed_body = <<<EOF
 Hello, Drupal!<br />
 <br />
