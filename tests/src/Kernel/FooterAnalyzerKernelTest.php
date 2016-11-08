@@ -25,7 +25,7 @@ class FooterAnalyzerKernelTest extends AnalyzerTestBase {
    */
   public function testFooterAnalyzer() {
     $raw_message = $this->getFileContent('eml/Plain.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $node_mail */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $node_mail */
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();

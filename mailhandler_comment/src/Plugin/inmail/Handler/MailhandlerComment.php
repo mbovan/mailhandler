@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\MIME\MessageInterface;
+use Drupal\inmail\MIME\MimeMessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -70,7 +70,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * {@inheritdoc}
    */
-  public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
+  public function invoke(MimeMessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
       $result = $processor_result->getAnalyzerResult();
 
@@ -93,7 +93,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
   /**
    * Creates a new comment from given mail message.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
@@ -104,7 +104,7 @@ class MailhandlerComment extends HandlerBase implements ContainerFactoryPluginIn
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a comment.
    */
-  protected function createComment(MessageInterface $message, DefaultAnalyzerResult $result) {
+  protected function createComment(MimeMessageInterface $message, DefaultAnalyzerResult $result) {
     $entity_id = $this->getEntityId($result);
 
     // Validate whether user is allowed to post comments.

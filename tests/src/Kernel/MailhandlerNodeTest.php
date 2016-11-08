@@ -134,7 +134,7 @@ class MailhandlerNodeTest extends KernelTestBase {
    */
   public function testSignedMails() {
     $raw_signed_mail = $this->getFileContent('eml/PGP_Signed_Inline.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $signed_mail */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $signed_mail */
     $signed_mail = $this->parser->parseMessage($raw_signed_mail);
 
     // Add a public key to the user.

@@ -26,7 +26,7 @@ abstract class AnalyzerTestBase extends KernelTestBase {
   /**
    * The message parser
    *
-   * @var \Drupal\inmail\MIME\Parser
+   * @var \Drupal\inmail\MIME\MimeParser
    */
   protected $parser;
 

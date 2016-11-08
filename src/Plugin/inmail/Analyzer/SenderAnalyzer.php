@@ -3,7 +3,7 @@
 namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\MIME\MessageInterface;
+use Drupal\inmail\MIME\MimeMessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
 
@@ -26,7 +26,7 @@ class SenderAnalyzer extends AnalyzerBase {
   /**
    * {@inheritdoc}
    */
-  public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
+  public function analyze(MimeMessageInterface $message, ProcessorResultInterface $processor_result) {
     $result = $processor_result->getAnalyzerResult();
 
     $this->findSender($message, $result);
@@ -35,12 +35,12 @@ class SenderAnalyzer extends AnalyzerBase {
   /**
    * Finds the message sender.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
    */
-  protected function findSender(MessageInterface $message, DefaultAnalyzerResult $result) {
+  protected function findSender(MimeMessageInterface $message, DefaultAnalyzerResult $result) {
     $sender = NULL;
     $user = NULL;
     $matches = [];

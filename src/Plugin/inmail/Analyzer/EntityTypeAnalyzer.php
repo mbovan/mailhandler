@@ -5,7 +5,7 @@ namespace Drupal\mailhandler\Plugin\inmail\Analyzer;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\MIME\MessageInterface;
+use Drupal\inmail\MIME\MimeMessageInterface;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
 
@@ -33,7 +33,7 @@ class EntityTypeAnalyzer extends AnalyzerBase {
   /**
    * {@inheritdoc}
    */
-  public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
+  public function analyze(MimeMessageInterface $message, ProcessorResultInterface $processor_result) {
     $result = $processor_result->getAnalyzerResult();
 
     $this->findEntityType($message, $result);
@@ -42,12 +42,12 @@ class EntityTypeAnalyzer extends AnalyzerBase {
   /**
    * Analyzes the message subject to extract entity type and bundle information.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzed result.
    */
-  protected function findEntityType(MessageInterface $message, DefaultAnalyzerResult $result) {
+  protected function findEntityType(MimeMessageInterface $message, DefaultAnalyzerResult $result) {
     $subject = $result->getSubject() ?: $message->getSubject();
     $entity_type = NULL;
     $bundle = NULL;

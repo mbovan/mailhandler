@@ -6,9 +6,9 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\MIME\MessageInterface;
-use Drupal\inmail\MIME\MultipartEntity;
-use Drupal\inmail\MIME\MultipartMessage;
+use Drupal\inmail\MIME\MimeMessageInterface;
+use Drupal\inmail\MIME\MimeMultipartEntity;
+use Drupal\inmail\MIME\MimeMultipartMessage;
 use Drupal\inmail\Plugin\inmail\Analyzer\AnalyzerBase;
 use Drupal\inmail\ProcessorResultInterface;
 
@@ -34,7 +34,7 @@ class PGPAnalyzer extends AnalyzerBase {
   /**
    * {@inheritdoc}
    */
-  public function analyze(MessageInterface $message, ProcessorResultInterface $processor_result) {
+  public function analyze(MimeMessageInterface $message, ProcessorResultInterface $processor_result) {
     $result = $processor_result->getAnalyzerResult();
 
     $context = [];
@@ -56,7 +56,7 @@ class PGPAnalyzer extends AnalyzerBase {
   /**
    * Returns flag whether the message is signed.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The message to check signature.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
@@ -66,9 +66,9 @@ class PGPAnalyzer extends AnalyzerBase {
    * @return bool
    *   TRUE if message is signed. Otherwise, FALSE.
    */
-  protected function isSigned(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
+  protected function isSigned(MimeMessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     // Support PGP/MIME signed messages.
-    if ($message instanceof MultipartMessage) {
+    if ($message instanceof MimeMultipartMessage) {
       $parameters = $message->getContentType()['parameters'];
       // As per https://tools.ietf.org/html/rfc2015#section-4, content type must
       // have a protocol parameter with "application/pgp-signature" value.
@@ -180,7 +180,7 @@ class PGPAnalyzer extends AnalyzerBase {
   /**
    * Analyzes the body part of the given message.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
@@ -190,14 +190,14 @@ class PGPAnalyzer extends AnalyzerBase {
    * @return string
    *   The analyzed message body.
    */
-  protected function findBody(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
+  protected function findBody(MimeMessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     // By default, use original message body.
     $body = $message->getBody();
 
     // Extract body from PGP/MIME messages.
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'mime') {
-      /** @var \Drupal\inmail\MIME\MultipartMessage $message */
-      /** @var \Drupal\inmail\MIME\MultipartEntity $signed_message_part */
+      /** @var \Drupal\inmail\MIME\MimeMultipartMessage $message */
+      /** @var \Drupal\inmail\MIME\MimeMultipartEntity $signed_message_part */
       $signed_message_part = $message->getPart($context['signed_text_index']);
       $body = '';
       foreach ($signed_message_part->getParts() as $part) {
@@ -237,7 +237,7 @@ class PGPAnalyzer extends AnalyzerBase {
   /**
    * Finds the sender from given mail message.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
@@ -246,7 +246,7 @@ class PGPAnalyzer extends AnalyzerBase {
    * @throws \Exception
    *   Throws an exception if user is not authenticated.
    */
-  protected function findSender(MessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
+  protected function findSender(MimeMessageInterface $message, DefaultAnalyzerResult $result, array &$context) {
     $sender = NULL;
     $user = NULL;
     $matches = [];
@@ -254,7 +254,7 @@ class PGPAnalyzer extends AnalyzerBase {
 
     // Use signed headers to extract "from" address for PGP/MIME messages.
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'mime') {
-      /** @var \Drupal\inmail\MIME\MultipartEntity $message */
+      /** @var \Drupal\inmail\MIME\MimeMultipartEntity $message */
       $signed_text_part = $message->getPart($context['signed_text_index']);
       $from = $signed_text_part->getHeader()->getFieldBody('From') ?: $message->getFrom();
     }

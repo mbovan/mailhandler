@@ -8,7 +8,7 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\inmail\DefaultAnalyzerResult;
-use Drupal\inmail\MIME\MessageInterface;
+use Drupal\inmail\MIME\MimeMessageInterface;
 use Drupal\inmail\Plugin\inmail\Handler\HandlerBase;
 use Drupal\inmail\ProcessorResultInterface;
 use Drupal\node\Entity\Node;
@@ -74,7 +74,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * {@inheritdoc}
    */
-  public function invoke(MessageInterface $message, ProcessorResultInterface $processor_result) {
+  public function invoke(MimeMessageInterface $message, ProcessorResultInterface $processor_result) {
     try {
       $result = $processor_result->getAnalyzerResult();
 
@@ -101,7 +101,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
   /**
    * Creates a new node from given mail message.
    *
-   * @param \Drupal\inmail\MIME\MessageInterface $message
+   * @param \Drupal\inmail\MIME\MimeMessageInterface $message
    *   The mail message.
    * @param \Drupal\inmail\DefaultAnalyzerResult $result
    *   The analyzer result.
@@ -112,7 +112,7 @@ class MailhandlerNode extends HandlerBase implements ContainerFactoryPluginInter
    * @throws \Exception
    *   Throws an exception in case user is not authorized to create a node.
    */
-  protected function createNode(MessageInterface $message, DefaultAnalyzerResult $result) {
+  protected function createNode(MimeMessageInterface $message, DefaultAnalyzerResult $result) {
     $node = Node::create([
       'type' => $this->getContentType($result),
       'body' => [

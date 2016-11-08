@@ -26,7 +26,7 @@ class SenderAnalyzerKernelTest extends AnalyzerTestBase {
    */
   public function testSenderAnalyzer() {
     $raw_message = $this->getFileContent('eml/Plain.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $message */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();

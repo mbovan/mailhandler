@@ -26,7 +26,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
    */
   public function testEntityTypeAnalyzer() {
     $raw_message = $this->getFileContent('eml/Plain.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $message */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
 
     $result = new ProcessorResult();
@@ -57,7 +57,7 @@ class EntityTypeAnalyzerKernelTest extends AnalyzerTestBase {
 
     // Assert partial matching (entity type only) is handled properly.
     $raw_message = str_replace('[node][page]', '[user][#id]', $raw_message);
-    /** @var \Drupal\inmail\MIME\MessageInterface $message */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $message */
     $message = $this->parser->parseMessage($raw_message);
     $result = new ProcessorResult();
     $analyzer->analyze($message, $result);

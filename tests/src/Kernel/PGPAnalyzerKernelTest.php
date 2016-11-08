@@ -27,7 +27,7 @@ class PGPAnalyzerKernelTest extends AnalyzerTestBase {
    */
   public function testPGAnalyzer() {
     $raw_signed_message = $this->getFileContent('eml/PGP_Signed_Inline.eml');
-    /** @var \Drupal\inmail\MIME\MessageInterface $signed_mail */
+    /** @var \Drupal\inmail\MIME\MimeMessageInterface $signed_mail */
     $signed_mail = $this->parser->parseMessage($raw_signed_message);
 
     // Create a new role.
