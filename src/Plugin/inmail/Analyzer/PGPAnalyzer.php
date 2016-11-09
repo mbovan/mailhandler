@@ -202,7 +202,7 @@ class PGPAnalyzer extends AnalyzerBase {
       $body = '';
       foreach ($signed_message_part->getParts() as $part) {
         // Extract the body from HTML messages.
-        if ($part instanceof MultipartEntity) {
+        if ($part instanceof MimeMultipartEntity) {
           foreach ($part->getParts() as $message_part) {
             if ($message_part->getContentType()['subtype'] == 'html') {
               $body .= $message_part->getBody();
@@ -250,13 +250,13 @@ class PGPAnalyzer extends AnalyzerBase {
     $sender = NULL;
     $user = NULL;
     $matches = [];
-    $from = $message->getFrom();
+    $from = $message->getFrom()['address'];
 
     // Use signed headers to extract "from" address for PGP/MIME messages.
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'mime') {
       /** @var \Drupal\inmail\MIME\MimeMultipartEntity $message */
       $signed_text_part = $message->getPart($context['signed_text_index']);
-      $from = $signed_text_part->getHeader()->getFieldBody('From') ?: $message->getFrom();
+      $from = $signed_text_part->getHeader()->getFieldBody('From') ?: $from;
     }
 
     preg_match('/[^@<\s]+@[^@\s>]+/', $from, $matches);

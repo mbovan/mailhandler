@@ -86,6 +86,7 @@ class MailhandlerWebTest extends WebTestBase {
     // Assert GPG key field.
     $edit = [
       'fields[mailhandler_gpg_key][type]' => 'mailhandler_gpg',
+      'fields[mailhandler_gpg_key][region]' => 'content',
     ];
     $this->drupalPostForm('admin/config/people/accounts/form-display', $edit, t('Save'));
     $this->assertText(t('Number of rows: 20'));
@@ -107,6 +108,7 @@ class MailhandlerWebTest extends WebTestBase {
     // Assert "Manage display" of GPG key field.
     $edit = [
       'fields[mailhandler_gpg_key][type]' => 'mailhandler_gpg',
+      'fields[mailhandler_gpg_key][region]' => 'content',
     ];
     $this->drupalPostForm('admin/config/people/accounts/display', $edit, t('Save'));
     $this->drupalPostAjaxForm(NULL, [], 'mailhandler_gpg_key_settings_edit');
