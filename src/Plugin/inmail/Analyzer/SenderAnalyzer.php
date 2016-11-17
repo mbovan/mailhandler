@@ -44,7 +44,7 @@ class SenderAnalyzer extends AnalyzerBase {
     $sender = NULL;
     $user = NULL;
     $matches = [];
-    $from = $message->getFrom()['address'];
+    $from = $message->getFrom()->getAddress();
 
     preg_match('/[^@<\s]+@[^@\s>]+/', $from, $matches);
     if (!empty($matches)) {

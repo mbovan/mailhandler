@@ -250,7 +250,7 @@ class PGPAnalyzer extends AnalyzerBase {
     $sender = NULL;
     $user = NULL;
     $matches = [];
-    $from = $message->getFrom()['address'];
+    $from = $message->getFrom()->getAddress();
 
     // Use signed headers to extract "from" address for PGP/MIME messages.
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'mime') {
