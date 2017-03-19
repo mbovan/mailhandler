@@ -250,7 +250,8 @@ class PGPAnalyzer extends AnalyzerBase {
     $sender = NULL;
     $user = NULL;
     $matches = [];
-    $from = $message->getFrom()->getAddress();
+    // @todo: Support multiple addresses in https://www.drupal.org/node/2861923
+    $from = $message->getFrom()[0]->getAddress();
 
     // Use signed headers to extract "from" address for PGP/MIME messages.
     if ($result->getContext('pgp')->getContextValue()['pgp_type'] == 'mime') {

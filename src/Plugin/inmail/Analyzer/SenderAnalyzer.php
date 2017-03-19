@@ -44,7 +44,8 @@ class SenderAnalyzer extends AnalyzerBase {
     $sender = NULL;
     $user = NULL;
     $matches = [];
-    $from = $message->getFrom()->getAddress();
+    // @todo: Support multiple addresses in https://www.drupal.org/node/2861923
+    $from = $message->getFrom()[0]->getAddress();
 
     preg_match('/[^@<\s]+@[^@\s>]+/', $from, $matches);
     if (!empty($matches)) {
